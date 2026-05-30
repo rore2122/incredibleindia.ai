@@ -1,1 +1,7 @@
 
+services:
+  - type: web
+    name: incredibleindia-ai
+    env: java
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -Dserver.port=$PORT -jar target/*.jar
