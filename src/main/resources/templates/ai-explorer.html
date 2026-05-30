@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Explorer — Incredible India</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@300;400;500;600;700&family=Cinzel:wght@400;600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    /* ═══════════════════════════════════════
+       TOKENS
+    ═══════════════════════════════════════ */
+    :root {
+      --bg-deep:     #04080f;
+      --bg-dark:     #080e1a;
+      --bg-card:     rgba(255,255,255,0.04);
+      --bg-card-hov: rgba(255,255,255,0.07);
+      --accent:      #e8a030;
+      --accent-warm: #f0c060;
+      --accent-glow: rgba(232,160,48,0.22);
+      --accent-dim:  rgba(232,160,48,0.10);
+      --text-primary:#f5f0e8;
+      --text-muted:  rgba(245,240,232,0.55);
+      --text-faint:  rgba(245,240,232,0.22);
+      --border:      rgba(232,160,48,0.20);
+      --border-soft: rgba(255,255,255,0.07);
+      --glass:       rgba(8,14,26,0.90);
+      --radius-sm:   8px;
+      --radius-md:   16px;
+      --radius-lg:   28px;
+      --font-display:'Cinzel', serif;
+      --font-serif:  'Playfair Display', serif;
+      --font-sans:   'Outfit', sans-serif;
+      --shadow-glow: 0 0 40px rgba(232,160,48,0.15);
+      --shadow-card: 0 8px 40px rgba(0,0,0,0.5);
+      --transition:  all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      background:var(--bg-deep); color:var(--text-primary);
+      font-family:var(--font-sans); overflow-x:hidden; min-height:100vh;
+    }
+    img { display:block; width:100%; object-fit:cover; }
+
+    /* ═══════════════════════════════════════
+       NOISE LAYER
+    ═══════════════════════════════════════ */
+    body::before {
+      content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    }
+
+    /* ═══════════════════════════════════════
+       SCROLL PROGRESS
+    ═══════════════════════════════════════ */
+    #progressBar {
+      position:fixed; top:0; left:0; height:2px; width:0%;
+      background:linear-gradient(90deg,var(--accent),var(--accent-warm));
+      z-index:1000;
+    }
+
+    /* ═══════════════════════════════════════
+       TOPBAR
+    ═══════════════════════════════════════ */
+    .topbar {
+      position:fixed; top:0; left:0; right:0; z-index:800;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 48px;
+      background:var(--glass); backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border-soft);
+    }
+    .topbar-logo {
+      font-family:var(--font-display); font-size:14px;
+      letter-spacing:0.25em; text-transform:uppercase;
+    }
+    .topbar-logo span { color:var(--accent); }
+    .topbar-back {
+      display:flex; align-items:center; gap:8px;
+      font-size:12px; letter-spacing:0.15em; text-transform:uppercase;
+      color:var(--text-muted); text-decoration:none;
+      transition:color 0.3s;
+    }
+    .topbar-back:hover { color:var(--accent); }
+    .topbar-place {
+      font-size:13px; color:var(--text-muted);
+      font-style:italic;
+    }
+    #topbarPlaceName { color:var(--accent-warm); font-style:normal; font-weight:600; }
+
+    /* ═══════════════════════════════════════
+       HERO SECTION
+    ═══════════════════════════════════════ */
+    .hero-section {
+      position:relative; height:80vh; min-height:520px;
+      background-size:cover; background-position:center; background-repeat:no-repeat;
+      display:flex; align-items:flex-end;
+      margin-top:0; overflow:hidden;
+    }
+    .hero-bg-blur {
+      position:absolute; inset:0;
+      background:linear-gradient(to top, var(--bg-deep) 0%, rgba(4,8,15,0.3) 40%, transparent 70%);
+    }
+    .hero-inner {
+      position:relative; z-index:2; padding:64px 64px 56px;
+      width:100%; display:flex; flex-direction:column; gap:12px;
+    }
+    .hero-breadcrumb {
+      font-size:11px; letter-spacing:0.4em; text-transform:uppercase;
+      color:var(--accent); font-weight:700;
+    }
+    .hero-place-title {
+      font-family:var(--font-display);
+      font-size:clamp(44px,8vw,96px);
+      line-height:0.9; letter-spacing:0.04em; text-transform:uppercase;
+      color:var(--text-primary); text-shadow:0 4px 40px rgba(0,0,0,0.6);
+    }
+    .hero-tagline {
+      font-family:var(--font-serif); font-size:clamp(16px,2vw,22px);
+      color:var(--text-muted); font-style:italic; margin-top:4px;
+    }
+    .hero-meta-chips {
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;
+    }
+    .hero-chip {
+      background:var(--glass); backdrop-filter:blur(12px);
+      border:1px solid var(--border); border-radius:20px;
+      padding:6px 14px; font-size:12px; color:var(--accent-warm);
+      letter-spacing:0.05em;
+    }
+
+    /* ═══════════════════════════════════════
+       LAYOUT
+    ═══════════════════════════════════════ */
+    .page-body {
+      max-width:1300px; margin:0 auto; padding:48px 48px 80px;
+      display:flex; flex-direction:column; gap:32px;
+    }
+
+    /* ═══════════════════════════════════════
+       SECTION CARD
+    ═══════════════════════════════════════ */
+    .card {
+      background:var(--bg-card); border:1px solid var(--border-soft);
+      border-radius:var(--radius-lg); overflow:hidden;
+      transition:border-color 0.3s;
+    }
+    .card:hover { border-color:var(--border); }
+    .card-header {
+      padding:28px 32px 20px;
+      border-bottom:1px solid var(--border-soft);
+      display:flex; align-items:center; gap:14px;
+    }
+    .card-icon {
+      width:40px; height:40px; border-radius:var(--radius-sm);
+      background:var(--accent-dim); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      color:var(--accent); font-size:16px; flex-shrink:0;
+    }
+    .card-header h2 {
+      font-family:var(--font-serif); font-size:22px; color:var(--text-primary);
+    }
+    .card-body { padding:28px 32px; }
+
+    /* ═══════════════════════════════════════
+       GALLERY GRID
+    ═══════════════════════════════════════ */
+    .gallery-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
+    }
+    .gallery-cell {
+      height:220px; border-radius:var(--radius-md);
+      background-size:cover; background-position:center;
+      background-color:var(--bg-dark); overflow:hidden; cursor:pointer;
+      transition:var(--transition); position:relative;
+    }
+    .gallery-cell:hover { transform:scale(1.03); box-shadow:var(--shadow-card); }
+    .gallery-cell-overlay {
+      position:absolute; inset:0; background:rgba(4,8,15,0.35);
+      opacity:0; transition:opacity 0.3s;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .gallery-cell-overlay i { font-size:24px; color:var(--accent); }
+    .gallery-cell:hover .gallery-cell-overlay { opacity:1; }
+
+    /* ═══════════════════════════════════════
+       ABOUT SECTION
+    ═══════════════════════════════════════ */
+    .about-content {
+      font-size:15px; line-height:1.9; color:var(--text-muted);
+      white-space:pre-wrap;
+    }
+    .about-loading {
+      display:flex; align-items:center; gap:12px;
+      color:var(--text-faint); font-size:14px;
+    }
+    .dot-loader span {
+      display:inline-block; width:6px; height:6px; border-radius:50%;
+      background:var(--accent); animation:dotBounce 1.4s infinite ease-in-out;
+      margin:0 2px;
+    }
+    .dot-loader span:nth-child(2){ animation-delay:0.2s; }
+    .dot-loader span:nth-child(3){ animation-delay:0.4s; }
+    @keyframes dotBounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-8px)} }
+
+    /* ═══════════════════════════════════════
+       PLANNER
+    ═══════════════════════════════════════ */
+    .planner-layout {
+      display:grid; grid-template-columns:1fr 1fr; gap:24px;
+    }
+    .planner-input-side { display:flex; flex-direction:column; gap:12px; }
+    .planner-label {
+      font-size:11px; letter-spacing:0.3em; text-transform:uppercase;
+      color:var(--text-faint); font-weight:700;
+    }
+    .planner-textarea {
+      width:100%; background:var(--bg-dark); border:1px solid var(--border-soft);
+      border-radius:var(--radius-md); padding:16px; color:var(--text-primary);
+      font-family:var(--font-sans); font-size:14px; resize:vertical; min-height:150px;
+      outline:none; line-height:1.6; transition:border-color 0.3s;
+    }
+    .planner-textarea:focus { border-color:var(--accent); }
+    .planner-textarea::placeholder { color:var(--text-faint); }
+    .generate-btn {
+      background:var(--accent); border:none; color:var(--bg-deep);
+      padding:14px 20px; border-radius:var(--radius-sm);
+      font-size:12px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;
+      cursor:pointer; font-family:var(--font-sans);
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      transition:var(--transition);
+    }
+    .generate-btn:hover { background:var(--accent-warm); transform:translateY(-2px); box-shadow:var(--shadow-glow); }
+    .generate-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+    .planner-result-side {
+      background:var(--bg-dark); border:1px solid var(--border-soft);
+      border-radius:var(--radius-md); padding:22px; min-height:200px;
+    }
+    #tripResult {
+      font-size:14px; color:var(--text-muted); line-height:1.9; white-space:pre-wrap;
+    }
+    .result-idle {
+      height:100%; display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:10px; color:var(--text-faint); text-align:center;
+      min-height:160px; font-size:13px;
+    }
+    .result-idle i { font-size:28px; color:var(--border); }
+
+    /* ═══════════════════════════════════════
+       QUICK PROMPTS
+    ═══════════════════════════════════════ */
+    .quick-prompts { display:flex; gap:8px; flex-wrap:wrap; }
+    .quick-btn {
+      background:var(--bg-dark); border:1px solid var(--border-soft);
+      color:var(--text-muted); padding:7px 14px; border-radius:20px;
+      font-size:12px; cursor:pointer; font-family:var(--font-sans);
+      transition:var(--transition);
+    }
+    .quick-btn:hover { border-color:var(--accent); color:var(--accent-warm); background:var(--accent-dim); }
+
+    /* ═══════════════════════════════════════
+       PDF DOWNLOAD
+    ═══════════════════════════════════════ */
+    .pdf-section {
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:16px;
+    }
+    .pdf-info h3 { font-size:18px; font-family:var(--font-serif); margin-bottom:4px; }
+    .pdf-info p { font-size:13px; color:var(--text-muted); }
+    .pdf-btn {
+      background:transparent; border:1px solid var(--accent);
+      color:var(--accent); padding:13px 28px; border-radius:var(--radius-sm);
+      font-size:12px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase;
+      cursor:pointer; font-family:var(--font-sans);
+      display:flex; align-items:center; gap:8px;
+      transition:var(--transition);
+    }
+    .pdf-btn:hover { background:var(--accent); color:var(--bg-deep); box-shadow:var(--shadow-glow); }
+
+    /* ═══════════════════════════════════════
+       LIGHTBOX
+    ═══════════════════════════════════════ */
+    .lightbox {
+      position:fixed; inset:0; background:rgba(4,8,15,0.95);
+      backdrop-filter:blur(12px); z-index:9000;
+      display:none; align-items:center; justify-content:center;
+    }
+    .lightbox.open { display:flex; }
+    .lightbox img {
+      max-width:90vw; max-height:85vh; border-radius:var(--radius-md);
+      box-shadow:0 20px 80px rgba(0,0,0,0.7);
+    }
+    .lightbox-close {
+      position:fixed; top:24px; right:24px;
+      width:44px; height:44px; border-radius:50%;
+      background:var(--bg-card); border:1px solid var(--border);
+      color:var(--text-primary); font-size:20px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:var(--transition);
+    }
+    .lightbox-close:hover { background:var(--accent); color:var(--bg-deep); }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media(max-width:800px){
+      .hero-inner { padding:40px 24px 40px; }
+      .page-body { padding:32px 20px 60px; }
+      .gallery-grid { grid-template-columns:repeat(2,1fr); }
+      .gallery-grid .gallery-cell:nth-child(3){ display:none; }
+      .planner-layout { grid-template-columns:1fr; }
+      .topbar { padding:14px 20px; }
+      .card-body { padding:20px; }
+      .card-header { padding:20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div id="progressBar"></div>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <a href="/" class="topbar-back">
+    <i class="fa-solid fa-arrow-left"></i> Back to India
+  </a>
+  <div class="topbar-logo">INCREDIBLE <span>INDIA</span> AI</div>
+  <div class="topbar-place">Exploring: <span id="topbarPlaceName">…</span></div>
+</nav>
+
+<!-- HERO -->
+<div class="hero-section" id="heroSection">
+  <div class="hero-bg-blur"></div>
+  <div class="hero-inner">
+    <div class="hero-breadcrumb">AI Tourism Explorer · Incredible India</div>
+    <h1 class="hero-place-title" id="placeTitle">Loading…</h1>
+    <p class="hero-tagline" id="placeTagline">Explore Incredible India</p>
+    <div class="hero-meta-chips" id="heroChips">
+      <span class="hero-chip">🇮🇳 India</span>
+      <span class="hero-chip">🤖 AI-Curated</span>
+      <span class="hero-chip">📍 Tourist Destination</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE BODY -->
+<div class="page-body">
+
+  <!-- GALLERY -->
+  <div class="card" id="galleryCard">
+    <div class="card-header">
+      <div class="card-icon"><i class="fa-solid fa-images"></i></div>
+      <div>
+        <h2>Destination Gallery</h2>
+        <p style="font-size:12px;color:var(--text-faint);margin-top:2px;">Visual highlights of this destination</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="gallery-grid" id="placeGallery">
+        <div class="gallery-cell" id="gc0"><div class="gallery-cell-overlay"><i class="fa-solid fa-expand"></i></div></div>
+        <div class="gallery-cell" id="gc1"><div class="gallery-cell-overlay"><i class="fa-solid fa-expand"></i></div></div>
+        <div class="gallery-cell" id="gc2"><div class="gallery-cell-overlay"><i class="fa-solid fa-expand"></i></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon"><i class="fa-solid fa-circle-info"></i></div>
+      <div>
+        <h2>About This Place</h2>
+        <p style="font-size:12px;color:var(--text-faint);margin-top:2px;">AI-generated destination insights</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div id="aboutPlace">
+        <div class="about-loading">
+          <div class="dot-loader"><span></span><span></span><span></span></div>
+          Loading AI information…
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI PLANNER -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+      <div>
+        <h2>AI Tourism Planner</h2>
+        <p style="font-size:12px;color:var(--text-faint);margin-top:2px;">Generate your personalized trip itinerary</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="planner-layout">
+        <div class="planner-input-side">
+          <div class="planner-label">Quick Prompts</div>
+          <div class="quick-prompts" id="quickPrompts">
+            <button class="quick-btn" data-prompt="Plan my 3-day trip with ₹15,000 budget">3 Days · ₹15K</button>
+            <button class="quick-btn" data-prompt="Plan a 5-day luxury trip">5 Days · Luxury</button>
+            <button class="quick-btn" data-prompt="Weekend getaway from Hyderabad">Weekend Trip</button>
+            <button class="quick-btn" data-prompt="Family trip with kids, 4 days">Family Trip</button>
+          </div>
+          <div class="planner-label" style="margin-top:4px;">Your Prompt</div>
+          <textarea id="tripPrompt" class="planner-textarea"
+            placeholder="Describe your dream trip here…&#10;Example: Plan my 3-day honeymoon trip with ₹20,000 budget, include hotels and local food."></textarea>
+          <button class="generate-btn" id="generateTripBtn">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            Generate AI Trip Plan
+          </button>
+        </div>
+        <div class="planner-result-side">
+          <div class="result-idle" id="tripIdle">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <span>Your AI trip plan will appear here…</span>
+          </div>
+          <div id="tripResult" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF EXPORT -->
+  <div class="card">
+    <div class="card-body">
+      <div class="pdf-section">
+        <div class="pdf-info">
+          <h3>Export Your Trip Report</h3>
+          <p>Download a beautifully formatted PDF with destination details and your AI trip plan.</p>
+        </div>
+        <button class="pdf-btn" id="downloadPdfBtn">
+          <i class="fa-solid fa-file-pdf"></i>
+          Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+/* ═════════════════════════════════
+   SCROLL PROGRESS
+═════════════════════════════════ */
+window.addEventListener('scroll',()=>{
+  const pct=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('progressBar').style.width=pct+'%';
+});
+
+/* ═════════════════════════════════
+   LIGHTBOX
+═════════════════════════════════ */
+let lightboxImages=[];
+function openLightbox(src){ const lb=document.getElementById('lightbox'); document.getElementById('lightboxImg').src=src; lb.classList.add('open'); }
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeLightbox(); });
+
+/* ═════════════════════════════════
+   QUICK PROMPTS
+═════════════════════════════════ */
+document.querySelectorAll('.quick-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const place=new URLSearchParams(window.location.search).get('place')||'this destination';
+    document.getElementById('tripPrompt').value=btn.dataset.prompt+' to '+place;
+  });
+});
+
+/* ═════════════════════════════════
+   MAIN INIT
+═════════════════════════════════ */
+window.onload = async function(){
+  const params=new URLSearchParams(window.location.search);
+  const place=params.get('place');
+
+  const placeTitle=document.getElementById('placeTitle');
+  const aboutPlace=document.getElementById('aboutPlace');
+  const topbarName=document.getElementById('topbarPlaceName');
+
+  if(!place){
+    placeTitle.textContent='No Place Selected';
+    topbarName.textContent='—';
+    return;
+  }
+
+  placeTitle.textContent=place;
+  topbarName.textContent=place;
+  document.getElementById('placeTagline').textContent='Exploring the beauty of '+place;
+  document.title='AI Explorer — '+place+' · Incredible India';
+
+  // IMAGES
+  try{
+    const imgResp=await fetch(`/api/images?place=${encodeURIComponent(place)}&count=4`);
+    const images=await imgResp.json();
+    if(images.length>0){
+      const hero=document.getElementById('heroSection');
+      hero.style.backgroundImage=`url('${images[0].landscape}')`;
+      lightboxImages=images.map(i=>i.landscape||i.large||i.medium);
+      ['gc0','gc1','gc2'].forEach((id,idx)=>{
+        const src=images[idx+1]? (images[idx+1].large||images[idx+1].medium) : null;
+        if(src){
+          const cell=document.getElementById(id);
+          cell.style.backgroundImage=`url('${src}')`;
+          cell.addEventListener('click',()=>openLightbox(src));
+        }
+      });
+    }
+  }catch(e){ console.error('Image error',e); }
+
+  // AI ABOUT
+  try{
+    const resp=await fetch('/api/explore-place',{
+      method:'POST', headers:{'Content-Type':'text/plain'}, body:place
+    });
+    const result=await resp.text();
+    document.getElementById('aboutPlace').innerHTML=`<div class="about-content">${escapeHtml(result)}</div>`;
+  }catch(e){
+    document.getElementById('aboutPlace').textContent='Failed to load AI information.';
+  }
+};
+
+function escapeHtml(str){
+  const d=document.createElement('div'); d.appendChild(document.createTextNode(str)); return d.innerHTML;
+}
+
+/* ═════════════════════════════════
+   TRIP PLANNER
+═════════════════════════════════ */
+document.getElementById('generateTripBtn').addEventListener('click',async function(){
+  const place=new URLSearchParams(window.location.search).get('place')||'India';
+  const prompt=document.getElementById('tripPrompt').value.trim()||`Plan my 3-day trip to ${place} with ₹15,000 budget`;
+  const tripResult=document.getElementById('tripResult');
+  const idle=document.getElementById('tripIdle');
+  const btn=this;
+
+  idle.style.display='none';
+  tripResult.style.display='block';
+  tripResult.textContent='✨ Crafting your AI trip plan…';
+  btn.disabled=true; btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Generating…';
+
+  try{
+    const r=await fetch('/api/ai-trip',{method:'POST',headers:{'Content-Type':'text/plain'},body:prompt});
+    tripResult.textContent=await r.text();
+  }catch(e){
+    tripResult.textContent='Failed to generate trip plan. Please try again.';
+  }
+  btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-wand-magic-sparkles"></i> Generate AI Trip Plan';
+});
+
+/* ═════════════════════════════════
+   PDF DOWNLOAD
+═════════════════════════════════ */
+document.getElementById('downloadPdfBtn').addEventListener('click',function(){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  const place=document.getElementById('placeTitle').textContent;
+  const about=document.getElementById('aboutPlace').textContent;
+  const trip=document.getElementById('tripResult').textContent||'No trip plan generated.';
+  const today=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+
+  // Header
+  doc.setFillColor(4,8,15);
+  doc.rect(0,0,210,45,'F');
+  doc.setTextColor(232,160,48);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(24);
+  doc.text('INCREDIBLE INDIA AI',15,22);
+  doc.setFontSize(11);
+  doc.setTextColor(180,160,120);
+  doc.text('AI-Powered Tourism Report',15,33);
+  doc.setTextColor(120,100,80);
+  doc.setFontSize(10);
+  doc.text('Generated: '+today,135,22);
+
+  // Destination
+  doc.setTextColor(232,160,48);
+  doc.setFontSize(13);
+  doc.text('DESTINATION',15,60);
+  doc.setTextColor(30,30,30);
+  doc.setFontSize(20);
+  doc.setFont('helvetica','bold');
+  doc.text(place,15,73);
+  doc.setDrawColor(232,160,48);
+  doc.line(15,80,195,80);
+
+  // About
+  doc.setTextColor(232,160,48);
+  doc.setFontSize(13);
+  doc.setFont('helvetica','bold');
+  doc.text('ABOUT THIS DESTINATION',15,95);
+  doc.setTextColor(50,50,50);
+  doc.setFontSize(11);
+  doc.setFont('helvetica','normal');
+  const aboutLines=doc.splitTextToSize(about,175);
+  doc.text(aboutLines,15,108);
+
+  // Trip plan page
+  doc.addPage();
+  doc.setFillColor(4,8,15);
+  doc.rect(0,0,210,40,'F');
+  doc.setTextColor(232,160,48);
+  doc.setFontSize(20);
+  doc.setFont('helvetica','bold');
+  doc.text('AI TRIP PLAN',15,25);
+
+  doc.setTextColor(50,50,50);
+  doc.setFontSize(11);
+  doc.setFont('helvetica','normal');
+  const tripLines=doc.splitTextToSize(trip,175);
+  doc.text(tripLines,15,55);
+
+  doc.setTextColor(160,130,80);
+  doc.setFontSize(9);
+  doc.text('Generated by Incredible India AI',15,285);
+  doc.text('incredibleindia.ai',155,285);
+
+  doc.save(`${place.replace(/\s+/g,'-')}-Trip-Plan.pdf`);
+});
+</script>
+</body>
+</html>

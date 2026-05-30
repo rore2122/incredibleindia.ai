@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incredible India AI</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@300;400;500;600;700&family=Cinzel:wght@400;600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    /* ═══════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════ */
+    :root {
+      --bg-deep:     #04080f;
+      --bg-dark:     #080e1a;
+      --bg-card:     rgba(255,255,255,0.04);
+      --bg-card-hov: rgba(255,255,255,0.08);
+      --accent:      #e8a030;
+      --accent-warm: #f0c060;
+      --accent-glow: rgba(232,160,48,0.25);
+      --accent-dim:  rgba(232,160,48,0.12);
+      --text-primary:#f5f0e8;
+      --text-muted:  rgba(245,240,232,0.55);
+      --text-faint:  rgba(245,240,232,0.25);
+      --border:      rgba(232,160,48,0.18);
+      --border-soft: rgba(255,255,255,0.07);
+      --glass:       rgba(8,14,26,0.85);
+      --radius-sm:   8px;
+      --radius-md:   16px;
+      --radius-lg:   28px;
+      --radius-xl:   40px;
+      --font-display:'Cinzel', serif;
+      --font-serif:  'Playfair Display', serif;
+      --font-sans:   'Outfit', sans-serif;
+      --shadow-glow: 0 0 40px rgba(232,160,48,0.15);
+      --shadow-card: 0 8px 40px rgba(0,0,0,0.5);
+      --transition:  all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+
+    /* ═══════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      overflow-x: hidden;
+      cursor: none;
+    }
+    a { text-decoration:none; color:inherit; }
+    img { display:block; width:100%; object-fit:cover; }
+
+    /* ═══════════════════════════════════════
+       CUSTOM CURSOR
+    ═══════════════════════════════════════ */
+    .cursor-outer {
+      position: fixed; top:0; left:0; width:36px; height:36px;
+      border: 1.5px solid var(--accent);
+      border-radius: 50%; pointer-events:none; z-index:9999;
+      transform: translate(-50%,-50%);
+      transition: transform 0.15s ease, width 0.2s, height 0.2s, border-color 0.2s;
+      mix-blend-mode: difference;
+    }
+    .cursor-inner {
+      position: fixed; top:0; left:0; width:6px; height:6px;
+      background: var(--accent); border-radius:50%;
+      pointer-events:none; z-index:9999;
+      transform: translate(-50%,-50%);
+    }
+    .cursor-outer.hovering { width:60px; height:60px; border-color: var(--accent-warm); }
+
+    /* ═══════════════════════════════════════
+       SCROLL PROGRESS
+    ═══════════════════════════════════════ */
+    #progressBar {
+      position: fixed; top:0; left:0; height:2px; width:0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-warm));
+      z-index:1000; transition: width 0.1s linear;
+    }
+
+    /* ═══════════════════════════════════════
+       CINEMATIC LOADER
+    ═══════════════════════════════════════ */
+    #cinematicLoader {
+      position: fixed; inset:0; background: var(--bg-deep);
+      display:flex; align-items:center; justify-content:center;
+      z-index:9000; flex-direction:column; gap:24px;
+    }
+    .loader-emblem {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 6vw, 72px);
+      letter-spacing: 0.2em; color: var(--text-primary);
+      animation: pulse 2s infinite;
+    }
+    .loader-emblem span { color: var(--accent); }
+    .loader-bar {
+      width:160px; height:1px; background: var(--border-soft); overflow:hidden;
+    }
+    .loader-bar-fill {
+      height:100%; width:0%; background: var(--accent);
+      animation: load 2.2s ease forwards;
+    }
+    .loader-sub {
+      font-family: var(--font-sans); font-size:11px; letter-spacing:0.4em;
+      color: var(--text-muted); text-transform: uppercase;
+    }
+    @keyframes load { to { width:100%; } }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+    /* ═══════════════════════════════════════
+       AI GREETING BANNER
+    ═══════════════════════════════════════ */
+    .ai-greeting {
+      position: fixed; top:70px; left:50%; transform:translateX(-50%);
+      background: var(--glass); backdrop-filter:blur(20px);
+      border:1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 12px 28px; z-index:500;
+      font-size: 13px; letter-spacing:0.05em;
+      color: var(--accent-warm); white-space:nowrap;
+      animation: slideDown 0.6s ease 2.5s both;
+      box-shadow: var(--shadow-glow);
+    }
+    @keyframes slideDown { from{opacity:0;transform:translateX(-50%) translateY(-20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+    /* ═══════════════════════════════════════
+       NAVBAR
+    ═══════════════════════════════════════ */
+    .navbar {
+      position: fixed; top:0; left:0; right:0; z-index:800;
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 18px 60px;
+      background: transparent;
+      transition: var(--transition);
+    }
+    .navbar.scrolled {
+      background: var(--glass); backdrop-filter:blur(20px);
+      border-bottom: 1px solid var(--border-soft);
+      padding: 14px 60px;
+    }
+    .nav-logo {
+      font-family: var(--font-display); font-size:18px;
+      letter-spacing:0.25em; color: var(--text-primary);
+      text-transform:uppercase;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { list-style:none; display:flex; gap:40px; }
+    .nav-links a {
+      font-size:12px; letter-spacing:0.18em; text-transform:uppercase;
+      color: var(--text-muted); font-weight:500;
+      position:relative; transition: color 0.3s;
+    }
+    .nav-links a::after {
+      content:''; position:absolute; bottom:-4px; left:0;
+      width:0; height:1px; background:var(--accent);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--accent-warm); }
+    .nav-links a:hover::after { width:100%; }
+    .nav-cta {
+      background: transparent; border:1px solid var(--accent);
+      color: var(--accent); padding:9px 22px; border-radius:var(--radius-sm);
+      font-size:11px; letter-spacing:0.2em; text-transform:uppercase;
+      cursor:pointer; font-family:var(--font-sans); font-weight:600;
+      transition: var(--transition);
+    }
+    .nav-cta:hover { background:var(--accent); color:var(--bg-deep); }
+
+    /* ═══════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════ */
+    .hero {
+      position:relative; height:100vh; min-height:700px;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
+    .hero-video {
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; opacity:0.35;
+    }
+    .hero-overlay {
+      position:absolute; inset:0;
+      background: radial-gradient(ellipse at 50% 80%, rgba(232,160,48,0.08) 0%, transparent 60%),
+                  linear-gradient(to bottom, rgba(4,8,15,0.2) 0%, rgba(4,8,15,0.7) 100%);
+    }
+    /* Noise texture */
+    .hero::after {
+      content:''; position:absolute; inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none; z-index:1;
+    }
+    .hero-content {
+      position:relative; z-index:10; text-align:center;
+      display:flex; flex-direction:column; align-items:center; gap:28px;
+      padding: 0 24px;
+    }
+
+    /* EYEBROW */
+    .hero-eyebrow {
+      font-size:11px; letter-spacing:0.5em; text-transform:uppercase;
+      color: var(--accent); font-family:var(--font-sans); font-weight:600;
+      animation: fadeUp 0.8s ease 2.8s both;
+    }
+
+    /* TITLE */
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(64px,12vw,160px);
+      line-height:0.88; letter-spacing:0.05em;
+      text-transform:uppercase; font-weight:900;
+      color: var(--text-primary);
+    }
+    .hero-title .line1 { display:block; animation: fadeUp 0.9s ease 3s both; }
+    .hero-title .line2 {
+      display:block; color: var(--accent);
+      animation: fadeUp 0.9s ease 3.15s both;
+    }
+
+    /* TYPING */
+    .hero-sub {
+      font-family: var(--font-serif); font-size:clamp(16px,2vw,22px);
+      color: var(--text-muted); font-style:italic;
+      animation: fadeUp 0.8s ease 3.3s both;
+    }
+    #typingText { color: var(--accent-warm); }
+
+    /* SEARCH */
+    .search-wrap {
+      display:flex; align-items:center; gap:0;
+      background: var(--glass); backdrop-filter:blur(16px);
+      border:1px solid var(--border); border-radius:var(--radius-xl);
+      padding: 6px 6px 6px 22px; width: min(540px,90vw);
+      animation: fadeUp 0.8s ease 3.45s both;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .search-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-glow);
+    }
+    .search-wrap i { color:var(--text-muted); font-size:15px; margin-right:12px; }
+    .search-wrap input {
+      flex:1; background:transparent; border:none; outline:none;
+      color: var(--text-primary); font-family:var(--font-sans);
+      font-size:14px; letter-spacing:0.03em;
+    }
+    .search-wrap input::placeholder { color:var(--text-faint); }
+    .search-btn {
+      background: var(--accent); border:none; color:var(--bg-deep);
+      padding: 11px 22px; border-radius:var(--radius-xl);
+      font-size:12px; font-weight:700; letter-spacing:0.12em;
+      text-transform:uppercase; cursor:pointer; font-family:var(--font-sans);
+      transition: background 0.3s;
+    }
+    .search-btn:hover { background:var(--accent-warm); }
+
+    /* HERO BUTTONS */
+    .hero-btns {
+      display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
+      animation: fadeUp 0.8s ease 3.6s both;
+    }
+    .btn-primary {
+      background: var(--accent); color:var(--bg-deep);
+      border:none; padding:14px 32px; border-radius:var(--radius-sm);
+      font-size:12px; font-weight:700; letter-spacing:0.18em;
+      text-transform:uppercase; cursor:pointer; font-family:var(--font-sans);
+      transition: var(--transition);
+    }
+    .btn-primary:hover { background:var(--accent-warm); transform:translateY(-2px); box-shadow:var(--shadow-glow); }
+    .btn-ghost {
+      background:transparent; color:var(--text-primary);
+      border:1px solid var(--border); padding:14px 32px;
+      border-radius:var(--radius-sm); font-size:12px; font-weight:500;
+      letter-spacing:0.18em; text-transform:uppercase; cursor:pointer;
+      font-family:var(--font-sans); display:inline-flex; align-items:center;
+      text-decoration:none; transition: var(--transition);
+    }
+    .btn-ghost:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-2px); }
+
+    /* LANGUAGE */
+    .lang-wrap {
+      animation: fadeUp 0.8s ease 3.7s both;
+    }
+    .lang-select {
+      background: var(--bg-card); border:1px solid var(--border-soft);
+      color: var(--text-muted); padding:8px 16px; border-radius:var(--radius-sm);
+      font-family:var(--font-sans); font-size:12px; letter-spacing:0.08em;
+      cursor:pointer; outline:none;
+    }
+
+    /* AI RESPONSE */
+    #aiResponse {
+      background: var(--bg-card); border:1px solid var(--border);
+      border-radius:var(--radius-md); padding:14px 22px;
+      font-size:13px; color:var(--accent-warm);
+      max-width:500px; width:100%; text-align:left;
+      animation: fadeUp 0.8s ease 3.8s both;
+      min-height:48px;
+    }
+
+    /* STATS */
+    .stats {
+      display:flex; gap:40px; flex-wrap:wrap; justify-content:center;
+      animation: fadeUp 0.8s ease 3.9s both;
+    }
+    .stat-box { text-align:center; }
+    .stat-number {
+      font-family: var(--font-display); font-size:clamp(28px,4vw,44px);
+      color: var(--accent); line-height:1;
+    }
+    .stat-label {
+      font-size:11px; letter-spacing:0.2em; text-transform:uppercase;
+      color: var(--text-muted); margin-top:6px;
+    }
+    .stat-divider {
+      width:1px; background:var(--border-soft); align-self:stretch;
+    }
+
+    /* SCROLL INDICATOR */
+    .scroll-hint {
+      position:absolute; bottom:36px; left:50%; transform:translateX(-50%);
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      font-size:10px; letter-spacing:0.3em; text-transform:uppercase;
+      color:var(--text-faint); z-index:10;
+      animation: fadeUp 1s ease 4.2s both;
+    }
+    .scroll-line {
+      width:1px; height:48px; background:linear-gradient(to bottom,var(--accent),transparent);
+      animation: scrollPulse 2s infinite;
+    }
+    @keyframes scrollPulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ═══════════════════════════════════════
+       WAVE DIVIDER
+    ═══════════════════════════════════════ */
+    .wave-divider { line-height:0; }
+    .wave-divider svg { display:block; }
+
+    /* ═══════════════════════════════════════
+       SECTIONS
+    ═══════════════════════════════════════ */
+    .section {
+      padding: 100px 60px;
+      max-width:1400px; margin:0 auto;
+    }
+    .section-header {
+      display:flex; flex-direction:column; align-items:center;
+      gap:12px; text-align:center; margin-bottom:64px;
+    }
+    .section-tag {
+      font-size:10px; letter-spacing:0.5em; text-transform:uppercase;
+      color:var(--accent); font-weight:700; font-family:var(--font-sans);
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size:clamp(32px,5vw,60px); letter-spacing:0.06em;
+      text-transform:uppercase; color:var(--text-primary); line-height:1;
+    }
+    .section-title span { color:var(--accent); }
+    .section-rule {
+      width:60px; height:1px; background:var(--accent); margin-top:4px;
+    }
+
+    /* REVEAL ANIMATION */
+    .reveal { opacity:0; transform:translateY(40px); transition:opacity 0.8s ease, transform 0.8s ease; }
+    .reveal.visible { opacity:1; transform:none; }
+
+    /* ═══════════════════════════════════════
+       FEATURED GRID
+    ═══════════════════════════════════════ */
+    .featured-grid {
+      display:grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 320px 280px;
+      gap:16px;
+    }
+    .feat-card {
+      position:relative; border-radius:var(--radius-md);
+      overflow:hidden; cursor:pointer;
+    }
+    .feat-card:first-child { grid-row: span 2; }
+    .feat-card img {
+      width:100%; height:100%; object-fit:cover;
+      transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .feat-card:hover img { transform:scale(1.08); }
+    .feat-card-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to top, rgba(4,8,15,0.9) 0%, transparent 50%);
+      transition: opacity 0.4s;
+    }
+    .feat-card:hover .feat-card-overlay { opacity:0.85; }
+    .feat-card-info {
+      position:absolute; bottom:0; left:0; right:0; padding:24px;
+    }
+    .feat-card-tag {
+      font-size:10px; letter-spacing:0.35em; text-transform:uppercase;
+      color:var(--accent); font-weight:700; margin-bottom:6px;
+    }
+    .feat-card-title {
+      font-family:var(--font-serif); font-size:clamp(18px,2.5vw,32px);
+      font-weight:700; color:var(--text-primary); line-height:1.1;
+    }
+    .feat-card-desc {
+      font-size:13px; color:var(--text-muted); margin-top:6px;
+      opacity:0; transform:translateY(8px);
+      transition: opacity 0.4s 0.1s, transform 0.4s 0.1s;
+    }
+    .feat-card:hover .feat-card-desc { opacity:1; transform:none; }
+    .feat-card-arrow {
+      position:absolute; top:20px; right:20px;
+      width:36px; height:36px; border-radius:50%;
+      background:var(--accent-dim); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; transform:scale(0.8);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .feat-card:hover .feat-card-arrow { opacity:1; transform:scale(1); }
+    .feat-card-arrow i { font-size:12px; color:var(--accent); }
+
+    /* ═══════════════════════════════════════
+       MAP SECTION
+    ═══════════════════════════════════════ */
+    .map-section-inner {
+      display:grid; grid-template-columns:1fr 380px; gap:48px; align-items:start;
+    }
+    .map-wrap {
+      position:relative; border-radius:var(--radius-lg);
+      overflow:hidden; background:var(--bg-card);
+      border:1px solid var(--border-soft);
+    }
+    .india-map { width:100%; display:block; filter:brightness(0.8) contrast(1.1); }
+    .state-hotspot {
+      position:absolute; border-radius:50%;
+      background:var(--accent-dim); border:2px solid var(--accent);
+      cursor:pointer; transition:var(--transition);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .state-hotspot:hover { background:var(--accent); transform:scale(1.3); box-shadow:0 0 20px var(--accent-glow); }
+    .state-hotspot .pulse-ring {
+      position:absolute; inset:-6px; border-radius:50%;
+      border:1px solid var(--accent); animation:ringPulse 2s infinite;
+    }
+    @keyframes ringPulse { 0%{transform:scale(1);opacity:0.8} 100%{transform:scale(2);opacity:0} }
+    .andhra  { width:22px;height:22px; bottom:28%; right:28%; }
+    .telangana { width:22px;height:22px; bottom:32%; right:31%; }
+    .tooltip {
+      position:absolute; background:var(--glass); backdrop-filter:blur(12px);
+      border:1px solid var(--border); border-radius:var(--radius-sm);
+      padding:8px 14px; font-size:12px; letter-spacing:0.05em;
+      color:var(--accent-warm); pointer-events:none; white-space:nowrap;
+      opacity:0; transition:opacity 0.2s;
+    }
+    .map-info-panel {
+      display:flex; flex-direction:column; gap:16px;
+    }
+    .map-info-card {
+      background:var(--bg-card); border:1px solid var(--border-soft);
+      border-radius:var(--radius-md); padding:22px; cursor:pointer;
+      transition:var(--transition);
+      display:flex; gap:16px; align-items:flex-start;
+    }
+    .map-info-card:hover { background:var(--bg-card-hov); border-color:var(--border); transform:translateX(4px); }
+    .map-info-card.active { border-color:var(--accent); background:var(--accent-dim); }
+    .map-info-icon {
+      width:44px; height:44px; border-radius:var(--radius-sm);
+      background:var(--accent-dim); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-size:20px; flex-shrink:0;
+    }
+    .map-info-text h3 { font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:4px; }
+    .map-info-text p { font-size:12px; color:var(--text-muted); line-height:1.5; }
+
+    /* ═══════════════════════════════════════
+       PLACES
+    ═══════════════════════════════════════ */
+    #places-container {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+      gap:20px;
+    }
+    .place-card {
+      background:var(--bg-card); border:1px solid var(--border-soft);
+      border-radius:var(--radius-md); overflow:hidden;
+      transition:var(--transition); cursor:pointer;
+    }
+    .place-card:hover { transform:translateY(-6px); border-color:var(--border); box-shadow:var(--shadow-card); }
+    .place-card-img { height:200px; overflow:hidden; }
+    .place-card-img img { height:100%; transition:transform 0.6s; }
+    .place-card:hover .place-card-img img { transform:scale(1.1); }
+    .place-card-body { padding:20px; }
+    .place-card-body h3 { font-family:var(--font-serif); font-size:20px; margin-bottom:8px; }
+    .place-card-body p { font-size:13px; color:var(--text-muted); line-height:1.6; }
+    .place-card-meta {
+      display:flex; gap:12px; margin-top:14px; flex-wrap:wrap;
+    }
+    .place-meta-chip {
+      font-size:11px; padding:4px 10px; border-radius:20px;
+      background:var(--accent-dim); border:1px solid var(--border);
+      color:var(--accent-warm); letter-spacing:0.05em;
+    }
+    .place-explore-btn {
+      margin-top:16px; width:100%;
+      background:transparent; border:1px solid var(--border);
+      color:var(--text-muted); padding:10px;
+      border-radius:var(--radius-sm); font-size:12px; font-weight:600;
+      letter-spacing:0.12em; text-transform:uppercase;
+      cursor:pointer; font-family:var(--font-sans);
+      transition:var(--transition);
+    }
+    .place-explore-btn:hover { background:var(--accent); border-color:var(--accent); color:var(--bg-deep); }
+
+    /* LOADER */
+    #loader {
+      display:none; flex-direction:column; align-items:center; gap:16px;
+      padding:60px;
+    }
+    .spinner {
+      width:40px; height:40px; border:2px solid var(--border-soft);
+      border-top-color:var(--accent); border-radius:50%;
+      animation:spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* DETAIL */
+    #detail-section {
+      display:none; background:var(--bg-card); border:1px solid var(--border-soft);
+      border-radius:var(--radius-lg); padding:40px; gap:32px;
+      grid-template-columns:1fr 1fr;
+    }
+    #detail-section.visible { display:grid; }
+    .carousel-image { border-radius:var(--radius-md); width:100%; height:320px; object-fit:cover; }
+    .detail-info { display:flex; flex-direction:column; gap:16px; }
+    #detail-title { font-family:var(--font-serif); font-size:clamp(24px,3vw,40px); }
+    #detail-desc { font-size:14px; color:var(--text-muted); line-height:1.8; }
+    .detail-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:8px;
+    }
+    .detail-box {
+      background:var(--bg-card); border:1px solid var(--border-soft);
+      border-radius:var(--radius-sm); padding:14px;
+    }
+    .detail-box h3 { font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:var(--text-faint); margin-bottom:6px; }
+    .detail-box p { font-size:14px; color:var(--accent-warm); font-weight:500; }
+
+    /* ═══════════════════════════════════════
+       EXPERIENCE GRID
+    ═══════════════════════════════════════ */
+    .experience-grid {
+      display:grid; grid-template-columns:repeat(2,1fr);
+      gap:20px;
+    }
+    .exp-card {
+      background:var(--bg-card); border:1px solid var(--border-soft);
+      border-radius:var(--radius-lg); padding:32px;
+      transition:var(--transition);
+    }
+    .exp-card:hover { border-color:var(--border); }
+    .exp-card-header {
+      display:flex; justify-content:space-between; align-items:flex-start;
+      margin-bottom:24px;
+    }
+    .exp-card-header h2 { font-family:var(--font-serif); font-size:22px; margin-bottom:4px; }
+    .exp-card-header p { font-size:12px; color:var(--text-muted); }
+    .exp-card-icon {
+      width:48px; height:48px; border-radius:var(--radius-sm);
+      background:var(--accent-dim); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-size:20px; color:var(--accent);
+    }
+    /* Weather */
+    .weather-selects { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+    .weather-select {
+      flex:1; min-width:140px;
+      background:var(--bg-dark); border:1px solid var(--border-soft);
+      color:var(--text-primary); padding:10px 14px; border-radius:var(--radius-sm);
+      font-family:var(--font-sans); font-size:13px; cursor:pointer; outline:none;
+    }
+    .weather-main-display {
+      display:flex; align-items:baseline; gap:12px; margin:16px 0 8px;
+    }
+    #weatherTemp { font-family:var(--font-display); font-size:56px; color:var(--accent); line-height:1; }
+    #weatherCondition { font-size:16px; color:var(--text-muted); }
+    .weather-meta { display:flex; gap:24px; }
+    .weather-meta-item h3 { font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:var(--text-faint); margin-bottom:4px; }
+    .weather-meta-item p { font-size:16px; color:var(--text-primary); font-weight:500; }
+    .weather-updated { font-size:11px; color:var(--text-faint); margin-top:12px; }
+
+    /* Recommender */
+    .recommend-chips { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
+    .recommend-btn {
+      background:var(--bg-dark); border:1px solid var(--border-soft);
+      color:var(--text-muted); padding:9px 16px; border-radius:var(--radius-xl);
+      font-size:13px; cursor:pointer; font-family:var(--font-sans);
+      transition:var(--transition);
+    }
+    .recommend-btn:hover, .recommend-btn.active {
+      background:var(--accent-dim); border-color:var(--accent); color:var(--accent-warm);
+    }
+    #recommendResult {
+      background:var(--bg-dark); border:1px solid var(--border-soft);
+      border-radius:var(--radius-md); padding:16px; font-size:13px;
+      color:var(--text-muted); min-height:80px; line-height:1.7;
+    }
+
+    /* Packages */
+    .package-list { display:flex; flex-direction:column; gap:12px; }
+    .package-item {
+      display:flex; justify-content:space-between; align-items:center;
+      background:var(--bg-dark); border:1px solid var(--border-soft);
+      border-radius:var(--radius-sm); padding:16px 18px;
+      transition:var(--transition);
+    }
+    .package-item:hover { border-color:var(--border); background:var(--bg-card-hov); }
+    .package-item-left h3 { font-size:14px; font-weight:600; margin-bottom:4px; }
+    .package-item-left p { font-size:12px; color:var(--text-muted); }
+    .package-price {
+      font-family:var(--font-display); font-size:14px; color:var(--accent);
+      text-align:right; white-space:nowrap;
+    }
+    .package-price span { display:block; font-size:10px; font-family:var(--font-sans); color:var(--text-faint); }
+
+    /* Nearby */
+    .nearby-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .nearby-item { position:relative; border-radius:var(--radius-sm); overflow:hidden; cursor:pointer; }
+    .nearby-item img { height:120px; transition:transform 0.5s; }
+    .nearby-item:hover img { transform:scale(1.08); }
+    .nearby-item h4 {
+      position:absolute; bottom:0; left:0; right:0;
+      background:linear-gradient(to top,rgba(4,8,15,0.9),transparent);
+      padding:12px 10px 8px; font-size:12px; font-weight:600;
+    }
+
+    /* ═══════════════════════════════════════
+       GALLERY SLIDER
+    ═══════════════════════════════════════ */
+    .gallery-slider { overflow:hidden; border-radius:var(--radius-md); }
+    .gallery-track {
+      display:flex; gap:16px; width:max-content;
+      animation: galleryScroll 30s linear infinite;
+    }
+    .gallery-track:hover { animation-play-state:paused; }
+    .gallery-track img {
+      width:340px; height:220px; border-radius:var(--radius-md);
+      flex-shrink:0; object-fit:cover;
+      transition:transform 0.5s; cursor:pointer;
+    }
+    .gallery-track img:hover { transform:scale(1.04); }
+    @keyframes galleryScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ═══════════════════════════════════════
+       REVIEWS
+    ═══════════════════════════════════════ */
+    .reviews-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+    .review-card {
+      background:var(--bg-card); border:1px solid var(--border-soft);
+      border-radius:var(--radius-md); padding:28px;
+      transition:var(--transition);
+      position:relative; overflow:hidden;
+    }
+    .review-card::before {
+      content:'"'; position:absolute; top:-10px; left:20px;
+      font-family:var(--font-serif); font-size:120px; color:var(--accent-dim);
+      line-height:1; pointer-events:none;
+    }
+    .review-card:hover { border-color:var(--border); transform:translateY(-4px); }
+    .review-stars { color:var(--accent); font-size:14px; margin-bottom:16px; letter-spacing:3px; }
+    .review-card p { font-size:14px; color:var(--text-muted); line-height:1.8; position:relative; z-index:1; }
+    .review-card h3 {
+      margin-top:20px; font-size:13px; font-weight:600;
+      color:var(--accent-warm); letter-spacing:0.05em;
+    }
+
+    /* ═══════════════════════════════════════
+       PARALLAX
+    ═══════════════════════════════════════ */
+    .parallax-section {
+      position:relative; height:420px;
+      background:url('https://images.pexels.com/photos/1603650/pexels-photo-1603650.jpeg') center/cover fixed;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .parallax-overlay {
+      position:absolute; inset:0;
+      background:rgba(4,8,15,0.65);
+    }
+    .parallax-content {
+      position:relative; z-index:1; text-align:center;
+    }
+    .parallax-content h1 {
+      font-family:var(--font-display); font-size:clamp(40px,7vw,90px);
+      letter-spacing:0.15em; text-transform:uppercase; color:var(--text-primary);
+    }
+    .parallax-content h1 span { color:var(--accent); }
+    .parallax-content p {
+      font-size:14px; color:var(--text-muted); letter-spacing:0.25em;
+      text-transform:uppercase; margin-top:14px;
+    }
+
+    /* ═══════════════════════════════════════
+       TILT CARDS
+    ═══════════════════════════════════════ */
+    .tilt-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+    .tilt-card {
+      position:relative; border-radius:var(--radius-md); overflow:hidden;
+      height:300px; cursor:pointer;
+      transition:transform 0.3s, box-shadow 0.3s;
+    }
+    .tilt-card:hover { box-shadow:var(--shadow-card); }
+    .tilt-card img { height:100%; transition:transform 0.6s; }
+    .tilt-card:hover img { transform:scale(1.1); }
+    .tilt-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to top,rgba(4,8,15,0.85),transparent 50%);
+      display:flex; align-items:flex-end; padding:24px;
+    }
+    .tilt-overlay h2 { font-family:var(--font-serif); font-size:24px; }
+
+    /* ═══════════════════════════════════════
+       AI PLANNER
+    ═══════════════════════════════════════ */
+    .planner-wrap {
+      display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;
+    }
+    .planner-panel {
+      background:var(--bg-card); border:1px solid var(--border-soft);
+      border-radius:var(--radius-lg); padding:36px;
+    }
+    .planner-panel h2 { font-family:var(--font-serif); font-size:26px; margin-bottom:8px; }
+    .planner-panel p { font-size:13px; color:var(--text-muted); margin-bottom:20px; line-height:1.6; }
+    .planner-textarea {
+      width:100%; background:var(--bg-dark); border:1px solid var(--border-soft);
+      border-radius:var(--radius-md); padding:16px; color:var(--text-primary);
+      font-family:var(--font-sans); font-size:14px; resize:vertical; min-height:140px;
+      outline:none; transition:border-color 0.3s;
+    }
+    .planner-textarea:focus { border-color:var(--accent); }
+    .planner-textarea::placeholder { color:var(--text-faint); }
+    .planner-submit {
+      margin-top:16px; width:100%; background:var(--accent);
+      border:none; color:var(--bg-deep); padding:15px;
+      border-radius:var(--radius-sm); font-size:13px; font-weight:700;
+      letter-spacing:0.15em; text-transform:uppercase; cursor:pointer;
+      font-family:var(--font-sans); transition:var(--transition);
+      display:flex; align-items:center; justify-content:center; gap:8px;
+    }
+    .planner-submit:hover { background:var(--accent-warm); transform:translateY(-2px); box-shadow:var(--shadow-glow); }
+    .planner-result {
+      background:var(--bg-card); border:1px solid var(--border-soft);
+      border-radius:var(--radius-lg); padding:36px;
+      min-height:300px;
+    }
+    .result-placeholder {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      height:100%; gap:12px; color:var(--text-faint);
+      font-size:13px; text-align:center; min-height:240px;
+    }
+    .result-placeholder i { font-size:32px; color:var(--border); }
+    #genaiResult {
+      font-size:14px; color:var(--text-muted); line-height:1.9;
+      white-space:pre-wrap;
+    }
+
+    /* AI RECOMMENDATION CARDS */
+    .ai-rec-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+    .ai-rec-card {
+      background:var(--bg-card); border:1px solid var(--border-soft);
+      border-radius:var(--radius-md); padding:28px; text-align:center;
+      transition:var(--transition); cursor:pointer;
+    }
+    .ai-rec-card:hover { border-color:var(--accent); transform:translateY(-6px); box-shadow:var(--shadow-glow); }
+    .ai-rec-card i {
+      font-size:28px; color:var(--accent); display:block; margin-bottom:16px;
+      transition:transform 0.3s;
+    }
+    .ai-rec-card:hover i { transform:scale(1.15) rotate(5deg); }
+    .ai-rec-card h2 { font-size:16px; font-weight:700; margin-bottom:8px; }
+    .ai-rec-card p { font-size:12px; color:var(--text-muted); line-height:1.6; }
+
+    /* ═══════════════════════════════════════
+       POPUPS
+    ═══════════════════════════════════════ */
+    .popup-overlay {
+      position:fixed; inset:0; background:rgba(4,8,15,0.85);
+      backdrop-filter:blur(8px); z-index:2000;
+      display:none; align-items:center; justify-content:center;
+    }
+    .popup-overlay.open { display:flex; }
+    .popup-box {
+      background:var(--bg-dark); border:1px solid var(--border);
+      border-radius:var(--radius-lg); padding:40px; width:min(480px,90vw);
+      position:relative; animation:popupIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes popupIn { from{opacity:0;transform:scale(0.9) translateY(20px)} to{opacity:1;transform:none} }
+    .popup-close {
+      position:absolute; top:18px; right:18px;
+      width:32px; height:32px; border-radius:50%;
+      background:var(--bg-card); border:1px solid var(--border-soft);
+      color:var(--text-muted); cursor:pointer; font-size:16px;
+      display:flex; align-items:center; justify-content:center;
+      transition:var(--transition);
+    }
+    .popup-close:hover { background:var(--accent); color:var(--bg-deep); border-color:var(--accent); }
+    .popup-box h2 { font-family:var(--font-serif); font-size:24px; margin-bottom:8px; }
+    .popup-box p { font-size:13px; color:var(--text-muted); margin-bottom:20px; }
+    .popup-input {
+      width:100%; background:var(--bg-card); border:1px solid var(--border-soft);
+      border-radius:var(--radius-sm); padding:13px 16px;
+      color:var(--text-primary); font-family:var(--font-sans); font-size:14px;
+      outline:none; transition:border-color 0.3s;
+    }
+    .popup-input:focus { border-color:var(--accent); }
+    .popup-btn {
+      margin-top:14px; width:100%; background:var(--accent);
+      border:none; color:var(--bg-deep); padding:14px;
+      border-radius:var(--radius-sm); font-size:13px; font-weight:700;
+      letter-spacing:0.15em; text-transform:uppercase; cursor:pointer;
+      font-family:var(--font-sans); transition:var(--transition);
+    }
+    .popup-btn:hover { background:var(--accent-warm); }
+
+    /* DESTINATION POPUP */
+    .dest-popup-overlay {
+      position:fixed; inset:0; background:rgba(4,8,15,0.85);
+      backdrop-filter:blur(8px); z-index:2000;
+      display:none; align-items:center; justify-content:center;
+    }
+    .dest-popup-overlay.open { display:flex; }
+    .dest-popup-box {
+      background:var(--bg-dark); border:1px solid var(--border);
+      border-radius:var(--radius-lg); padding:40px; width:min(440px,90vw);
+      position:relative; animation:popupIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .dest-popup-select {
+      width:100%; margin:16px 0;
+      background:var(--bg-card); border:1px solid var(--border-soft);
+      color:var(--text-primary); padding:12px 14px;
+      border-radius:var(--radius-sm); font-family:var(--font-sans); font-size:14px;
+      cursor:pointer; outline:none;
+    }
+    .dest-popup-btns { display:flex; gap:10px; margin-top:4px; }
+    .dest-popup-btns button {
+      flex:1; padding:12px; border-radius:var(--radius-sm);
+      font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
+      cursor:pointer; font-family:var(--font-sans); transition:var(--transition);
+    }
+    #exploreDestinationBtn { background:var(--accent); border:none; color:var(--bg-deep); }
+    #exploreDestinationBtn:hover { background:var(--accent-warm); }
+    .dest-close-btn { background:transparent; border:1px solid var(--border-soft); color:var(--text-muted); }
+    .dest-close-btn:hover { border-color:var(--border); color:var(--text-primary); }
+
+    /* ═══════════════════════════════════════
+       BACK TO TOP
+    ═══════════════════════════════════════ */
+    .back-to-top {
+      position:fixed; bottom:32px; right:32px;
+      width:44px; height:44px; border-radius:50%;
+      background:var(--accent); border:none;
+      color:var(--bg-deep); cursor:pointer;
+      font-size:16px; z-index:700;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:var(--shadow-glow); transition:var(--transition);
+      opacity:0; transform:translateY(20px);
+    }
+    .back-to-top.visible { opacity:1; transform:none; }
+    .back-to-top:hover { background:var(--accent-warm); transform:translateY(-3px); }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
+    footer {
+      background:var(--bg-dark); border-top:1px solid var(--border-soft);
+      padding:60px; text-align:center;
+    }
+    .footer-logo { font-family:var(--font-display); font-size:28px; letter-spacing:0.25em; margin-bottom:16px; }
+    .footer-logo span { color:var(--accent); }
+    footer p { font-size:12px; color:var(--text-faint); letter-spacing:0.12em; }
+
+    /* ═══════════════════════════════════════
+       FLOATING LIGHTS
+    ═══════════════════════════════════════ */
+    .glow-orb {
+      position:fixed; border-radius:50%; pointer-events:none; z-index:0;
+      filter:blur(100px); opacity:0.06;
+    }
+    .orb1 { width:600px;height:600px; background:var(--accent); top:-200px; left:-200px; }
+    .orb2 { width:400px;height:400px; background:rgba(50,100,200,0.8); bottom:0; right:-100px; }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media(max-width:900px){
+      .section { padding:64px 24px; }
+      .featured-grid { grid-template-columns:1fr 1fr; grid-template-rows:auto; }
+      .feat-card:first-child { grid-row:auto; }
+      .map-section-inner { grid-template-columns:1fr; }
+      .experience-grid { grid-template-columns:1fr; }
+      .planner-wrap { grid-template-columns:1fr; }
+      .reviews-grid { grid-template-columns:1fr; }
+      .tilt-grid { grid-template-columns:1fr; }
+      .ai-rec-grid { grid-template-columns:repeat(2,1fr); }
+      .navbar { padding:16px 24px; }
+      .navbar.scrolled { padding:12px 24px; }
+      .nav-links { display:none; }
+    }
+    @media(max-width:600px){
+      .featured-grid { grid-template-columns:1fr; }
+      .ai-rec-grid { grid-template-columns:1fr 1fr; }
+      .stats { gap:20px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- GLOW ORBS -->
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+
+<!-- CUSTOM CURSOR -->
+<div class="cursor-outer" id="cursorOuter"></div>
+<div class="cursor-inner" id="cursorInner"></div>
+
+<!-- PROGRESS BAR -->
+<div id="progressBar"></div>
+
+<!-- CINEMATIC LOADER -->
+<div id="cinematicLoader">
+  <div class="loader-emblem">INCREDIBLE <span>INDIA</span></div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  <div class="loader-sub">Initializing AI Tourism Experience</div>
+</div>
+
+
+<!-- BACK TO TOP -->
+<button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+  <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="nav-logo">INCREDIBLE <span>INDIA</span></div>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#featured">Featured</a></li>
+    <li><a href="#explore">Explore</a></li>
+    <li><a href="#planner">AI Planner</a></li>
+    <li><a href="#places">Places</a></li>
+  </ul>
+  <button class="nav-cta" id="aiVoiceBtn">🤖 Ask AI Guide</button>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     HERO
+═══════════════════════════════════════ -->
+<section class="hero">
+  <video autoplay muted loop playsinline class="hero-video">
+    <source src="/videos/india.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">AI-Powered Tourism · Discover the Soul of India</div>
+
+    <h1 class="hero-title">
+      <span class="line1">INCREDIBLE</span>
+      <span class="line2">INDIA</span>
+    </h1>
+
+    <p class="hero-sub">
+      <span id="typingText"></span>
+    </p>
+
+
+    <div class="hero-btns">
+      <button class="btn-primary" id="aiVoiceBtnHero">🤖 Ask AI Guide</button>
+      <a href="#planner" class="btn-ghost">✨ AI Trip Planner</a>
+    </div>
+
+
+    <div id="aiResponse">AI Guide Ready…</div>
+
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-number counter" data-target="28">0</div>
+        <div class="stat-label">States</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-box">
+        <div class="stat-number counter" data-target="140">0</div>
+        <div class="stat-label">Destinations</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-box">
+        <div class="stat-number counter" data-target="5000">0</div>
+        <div class="stat-label">Years of Culture</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-box">
+        <div class="stat-number counter" data-target="40">0</div>
+        <div class="stat-label">UNESCO Sites</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- WAVE -->
+<div class="wave-divider">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 80">
+    <path fill="#04080f" d="M0,40L60,45C120,50,240,60,360,55C480,50,600,30,720,30C840,30,960,50,1080,55C1200,60,1320,50,1380,45L1440,40L1440,80L0,80Z"/>
+  </svg>
+</div>
+
+<!-- ═══════════════════════════════════════
+     FEATURED
+═══════════════════════════════════════ -->
+<section class="section reveal" id="featured" style="padding-top:40px;">
+  <div class="section-header">
+    <div class="section-tag">Curated Picks</div>
+    <div class="section-title">FEATURED <span>DESTINATIONS</span></div>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="featured-grid">
+    <div class="feat-card">
+      <img src="https://images.pexels.com/photos/1603650/pexels-photo-1603650.jpeg" alt="Taj Mahal">
+      <div class="feat-card-overlay"></div>
+      <div class="feat-card-arrow"><i class="fa-solid fa-arrow-up-right"></i></div>
+      <div class="feat-card-info">
+        <div class="feat-card-tag">Icon of India</div>
+        <h2 class="feat-card-title">Taj Mahal</h2>
+        <p class="feat-card-desc">Monument of eternal love in Agra, Uttar Pradesh.</p>
+      </div>
+    </div>
+    <div class="feat-card">
+      <img src="https://images.pexels.com/photos/962464/pexels-photo-962464.jpeg" alt="Kerala">
+      <div class="feat-card-overlay"></div>
+      <div class="feat-card-arrow"><i class="fa-solid fa-arrow-up-right"></i></div>
+      <div class="feat-card-info">
+        <div class="feat-card-tag">God's Own Country</div>
+        <h2 class="feat-card-title">Kerala</h2>
+        <p class="feat-card-desc">Lush backwaters and emerald hills.</p>
+      </div>
+    </div>
+    <div class="feat-card">
+      <img src="https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg" alt="Goa">
+      <div class="feat-card-overlay"></div>
+      <div class="feat-card-arrow"><i class="fa-solid fa-arrow-up-right"></i></div>
+      <div class="feat-card-info">
+        <div class="feat-card-tag">Beach Paradise</div>
+        <h2 class="feat-card-title">Goa</h2>
+        <p class="feat-card-desc">Golden sands, vibrant nightlife.</p>
+      </div>
+    </div>
+    <div class="feat-card">
+      <img src="https://images.pexels.com/photos/5205097/pexels-photo-5205097.jpeg" alt="Kashmir">
+      <div class="feat-card-overlay"></div>
+      <div class="feat-card-arrow"><i class="fa-solid fa-arrow-up-right"></i></div>
+      <div class="feat-card-info">
+        <div class="feat-card-tag">Paradise on Earth</div>
+        <h2 class="feat-card-title">Kashmir</h2>
+        <p class="feat-card-desc">Snow-capped peaks and serene Dal Lake.</p>
+      </div>
+    </div>
+    <div class="feat-card">
+      <img src="https://images.pexels.com/photos/3889843/pexels-photo-3889843.jpeg" alt="Hampi">
+      <div class="feat-card-overlay"></div>
+      <div class="feat-card-arrow"><i class="fa-solid fa-arrow-up-right"></i></div>
+      <div class="feat-card-info">
+        <div class="feat-card-tag">UNESCO Heritage</div>
+        <h2 class="feat-card-title">Hampi</h2>
+        <p class="feat-card-desc">Ancient stone architecture & ruins.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WAVE -->
+<div class="wave-divider">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 60">
+    <path fill="#04080f" d="M0,20L480,50L960,20L1440,50L1440,60L0,60Z"/>
+  </svg>
+</div>
+
+<!-- ═══════════════════════════════════════
+     EXPLORE MAP
+═══════════════════════════════════════ -->
+<section class="section reveal" id="explore">
+  <div class="section-header">
+    <div class="section-tag">Interactive Map</div>
+    <div class="section-title">EXPLORE <span>INDIA</span></div>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="map-section-inner">
+    <div class="map-wrap">
+      <img src="/india-map.png" class="india-map" alt="India Map">
+      <div id="tooltip" class="tooltip"></div>
+      <div class="state-hotspot andhra" onclick="loadPlaces(1)"
+           onmouseenter="showTooltip(event,'Andhra Pradesh')" onmouseleave="hideTooltip()">
+        <div class="pulse-ring"></div>
+      </div>
+      <div class="state-hotspot telangana" onclick="loadPlaces(2)"
+           onmouseenter="showTooltip(event,'Telangana')" onmouseleave="hideTooltip()">
+        <div class="pulse-ring"></div>
+      </div>
+    </div>
+
+    <div class="map-info-panel">
+      <div class="map-info-card active" onclick="loadPlaces(1)">
+        <div class="map-info-icon">🏛️</div>
+        <div class="map-info-text">
+          <h3>Andhra Pradesh</h3>
+          <p>Temples, beaches, and rich cultural heritage. Home to Tirupati & Araku Valley.</p>
+        </div>
+      </div>
+      <div class="map-info-card" onclick="loadPlaces(2)">
+        <div class="map-info-icon">🕌</div>
+        <div class="map-info-text">
+          <h3>Telangana</h3>
+          <p>The City of Pearls, Hyderabad — Charminar, Golconda Fort & biryani culture.</p>
+        </div>
+      </div>
+      <div class="map-info-card" style="opacity:0.45;pointer-events:none;">
+        <div class="map-info-icon">➕</div>
+        <div class="map-info-text">
+          <h3>More States Coming</h3>
+          <p>Rajasthan, Goa, Tamil Nadu & more being added soon.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOADER -->
+<div id="loader" style="display:none;flex-direction:column;align-items:center;gap:16px;padding:60px;">
+  <div class="spinner"></div>
+  <p style="font-size:13px;letter-spacing:0.2em;color:var(--text-muted);">Loading Tourist Places…</p>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PLACES
+═══════════════════════════════════════ -->
+<section class="section reveal" id="places">
+  <div class="section-header">
+    <div class="section-tag">Discover</div>
+    <div class="section-title">TOURIST <span>PLACES</span></div>
+    <div class="section-rule"></div>
+  </div>
+  <div id="places-container"></div>
+</section>
+
+<!-- DETAIL SECTION -->
+<section class="section">
+  <div id="detail-section">
+    <img id="detail-image" class="carousel-image" src="" alt="">
+    <div class="detail-info">
+      <h2 id="detail-title"></h2>
+      <p id="detail-desc"></p>
+      <div class="detail-grid">
+        <div class="detail-box"><h3>Best Season</h3><p id="detail-season"></p></div>
+        <div class="detail-box"><h3>Duration</h3><p id="detail-duration"></p></div>
+        <div class="detail-box"><h3>Entry Fee</h3><p id="detail-fee"></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     TOURIST EXPERIENCE
+═══════════════════════════════════════ -->
+<section class="section reveal" id="experience" style="background:var(--bg-dark);max-width:100%;padding:100px 60px;">
+  <div style="max-width:1400px;margin:0 auto;">
+    <div class="section-header">
+      <div class="section-tag">Tools & Features</div>
+      <div class="section-title">TOURIST <span>EXPERIENCE</span></div>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="experience-grid">
+
+      <!-- WEATHER CARD -->
+      <div class="exp-card">
+        <div class="exp-card-header">
+          <div>
+            <h2>Live Weather</h2>
+            <p>Real-time climate updates</p>
+          </div>
+          <div class="exp-card-icon"><i class="fa-solid fa-cloud-sun"></i></div>
+        </div>
+        <div class="weather-selects">
+          <select id="stateWeatherSelect" class="weather-select">
+            <option selected disabled>Select State</option>
+            <option value="Amaravati">Andhra Pradesh</option>
+            <option value="Itanagar">Arunachal Pradesh</option>
+            <option value="Dispur">Assam</option>
+            <option value="Patna">Bihar</option>
+            <option value="Raipur">Chhattisgarh</option>
+            <option value="Panaji">Goa</option>
+            <option value="Gandhinagar">Gujarat</option>
+            <option value="Chandigarh">Haryana</option>
+            <option value="Shimla">Himachal Pradesh</option>
+            <option value="Ranchi">Jharkhand</option>
+            <option value="Bengaluru">Karnataka</option>
+            <option value="Thiruvananthapuram">Kerala</option>
+            <option value="Bhopal">Madhya Pradesh</option>
+            <option value="Mumbai">Maharashtra</option>
+            <option value="Imphal">Manipur</option>
+            <option value="Shillong">Meghalaya</option>
+            <option value="Aizawl">Mizoram</option>
+            <option value="Kohima">Nagaland</option>
+            <option value="Bhubaneswar">Odisha</option>
+            <option value="Chandigarh">Punjab</option>
+            <option value="Jaipur">Rajasthan</option>
+            <option value="Gangtok">Sikkim</option>
+            <option value="Chennai">Tamil Nadu</option>
+            <option value="Hyderabad">Telangana</option>
+            <option value="Agartala">Tripura</option>
+            <option value="Lucknow">Uttar Pradesh</option>
+            <option value="Dehradun">Uttarakhand</option>
+            <option value="Kolkata">West Bengal</option>
+          </select>
+          <select id="cityWeatherSelect" class="weather-select">
+            <option selected disabled>Select City</option>
+          </select>
+        </div>
+        <p id="selectedStateText" style="font-size:12px;color:var(--text-faint);margin-bottom:2px;">📍 State: —</p>
+        <p id="selectedCityText" style="font-size:12px;color:var(--text-faint);">🏙 City: —</p>
+        <div class="weather-main-display">
+          <h1 id="weatherTemp">28°C</h1>
+          <span id="weatherCondition">Sunny</span>
+        </div>
+        <div class="weather-meta">
+          <div class="weather-meta-item"><h3>Humidity</h3><p id="humidity">62%</p></div>
+          <div class="weather-meta-item"><h3>Wind</h3><p id="windSpeed">12 km/h</p></div>
+        </div>
+        <p class="weather-updated" id="lastUpdated">🕒 Last Updated: —</p>
+      </div>
+
+      <!-- RECOMMENDER CARD -->
+      <div class="exp-card">
+        <div class="exp-card-header">
+          <div>
+            <h2>AI Destination Recommender</h2>
+            <p>Find your perfect destination</p>
+          </div>
+          <div class="exp-card-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        </div>
+        <div class="recommend-chips">
+          <button class="recommend-btn" data-category="Adventure">🏔 Adventure</button>
+          <button class="recommend-btn" data-category="Nature">🌿 Nature</button>
+          <button class="recommend-btn" data-category="Family">👨‍👩‍👧 Family</button>
+          <button class="recommend-btn" data-category="Spiritual">🕉 Spiritual</button>
+          <button class="recommend-btn" data-category="Romantic">❤️ Romantic</button>
+        </div>
+        <div id="recommendResult">Select a category to discover AI-curated destinations…</div>
+      </div>
+
+      <!-- PACKAGES CARD -->
+      <div class="exp-card">
+        <div class="exp-card-header">
+          <div>
+            <h2>Tourism Packages</h2>
+            <p>Curated travel experiences</p>
+          </div>
+          <div class="exp-card-icon"><i class="fa-solid fa-suitcase-rolling"></i></div>
+        </div>
+        <div class="package-list">
+          <div class="package-item">
+            <div class="package-item-left">
+              <h3>❤️ Honeymoon Escape</h3>
+              <p>Kashmir · Kerala · Goa</p>
+            </div>
+            <div class="package-price">₹45,000<span>5 Days</span></div>
+          </div>
+          <div class="package-item">
+            <div class="package-item-left">
+              <h3>🧗 Adventure Trail</h3>
+              <p>Manali · Rishikesh · Ladakh</p>
+            </div>
+            <div class="package-price">₹32,000<span>6 Days</span></div>
+          </div>
+          <div class="package-item">
+            <div class="package-item-left">
+              <h3>👨‍👩‍👧 Family Vacation</h3>
+              <p>Jaipur · Kerala · Ooty</p>
+            </div>
+            <div class="package-price">₹38,000<span>7 Days</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEARBY CARD -->
+      <div class="exp-card">
+        <div class="exp-card-header">
+          <div>
+            <h2>Nearby Attractions</h2>
+            <p>Discover hidden gems</p>
+          </div>
+          <div class="exp-card-icon"><i class="fa-solid fa-mountain-city"></i></div>
+        </div>
+        <div class="nearby-grid">
+          <div class="nearby-item">
+            <img src="https://images.pexels.com/photos/3889843/pexels-photo-3889843.jpeg" alt="Hampi">
+            <h4>Hampi Ruins</h4>
+          </div>
+          <div class="nearby-item">
+            <img src="https://images.pexels.com/photos/5205097/pexels-photo-5205097.jpeg" alt="Dal Lake">
+            <h4>Dal Lake</h4>
+          </div>
+          <div class="nearby-item">
+            <img src="https://images.pexels.com/photos/962464/pexels-photo-962464.jpeg" alt="Kerala">
+            <h4>Kerala Backwaters</h4>
+          </div>
+          <div class="nearby-item">
+            <img src="https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg" alt="Goa">
+            <h4>Goa Beaches</h4>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     GALLERY
+═══════════════════════════════════════ -->
+<section class="section reveal" id="gallery">
+  <div class="section-header">
+    <div class="section-tag">Visual Journey</div>
+    <div class="section-title">CINEMATIC <span>GALLERY</span></div>
+    <div class="section-rule"></div>
+  </div>
+  <div class="gallery-slider">
+    <div class="gallery-track">
+      <img src="https://images.pexels.com/photos/1603650/pexels-photo-1603650.jpeg" alt="">
+      <img src="https://images.pexels.com/photos/962464/pexels-photo-962464.jpeg" alt="">
+      <img src="https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg" alt="">
+      <img src="https://images.pexels.com/photos/5205097/pexels-photo-5205097.jpeg" alt="">
+      <img src="https://images.pexels.com/photos/3889843/pexels-photo-3889843.jpeg" alt="">
+      <!-- Duplicate for seamless loop -->
+      <img src="https://images.pexels.com/photos/1603650/pexels-photo-1603650.jpeg" alt="">
+      <img src="https://images.pexels.com/photos/962464/pexels-photo-962464.jpeg" alt="">
+      <img src="https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg" alt="">
+      <img src="https://images.pexels.com/photos/5205097/pexels-photo-5205097.jpeg" alt="">
+      <img src="https://images.pexels.com/photos/3889843/pexels-photo-3889843.jpeg" alt="">
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     REVIEWS
+═══════════════════════════════════════ -->
+<section class="section reveal" id="reviews">
+  <div class="section-header">
+    <div class="section-tag">Testimonials</div>
+    <div class="section-title">TRAVELER <span>REVIEWS</span></div>
+    <div class="section-rule"></div>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p>Incredible cinematic experience. The AI guide made tourism exploration feel futuristic and deeply personal.</p>
+      <h3>— Arjun Reddy</h3>
+    </div>
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p>One of the best tourism web interfaces I have ever seen. The design, the AI features — absolutely world-class.</p>
+      <h3>— Priya Sharma</h3>
+    </div>
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p>The voice AI and cinematic visuals are absolutely amazing. It felt like I was already on vacation just browsing!</p>
+      <h3>— Rahul Verma</h3>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     PARALLAX
+═══════════════════════════════════════ -->
+<div class="parallax-section">
+  <div class="parallax-overlay"></div>
+  <div class="parallax-content">
+    <h1>EXPERIENCE <span>INDIA</span></h1>
+    <p>A cinematic, AI-powered tourism journey</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TILT CARDS
+═══════════════════════════════════════ -->
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">Highlights</div>
+    <div class="section-title">CINEMATIC <span>EXPERIENCE</span></div>
+    <div class="section-rule"></div>
+  </div>
+  <div class="tilt-grid">
+    <div class="tilt-card">
+      <img src="https://images.pexels.com/photos/1603650/pexels-photo-1603650.jpeg" alt="Taj Mahal">
+      <div class="tilt-overlay"><h2>Taj Mahal</h2></div>
+    </div>
+    <div class="tilt-card">
+      <img src="https://images.pexels.com/photos/962464/pexels-photo-962464.jpeg" alt="Kerala">
+      <div class="tilt-overlay"><h2>Kerala</h2></div>
+    </div>
+    <div class="tilt-card">
+      <img src="https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg" alt="Goa">
+      <div class="tilt-overlay"><h2>Goa</h2></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     AI PLANNER
+═══════════════════════════════════════ -->
+<section class="section reveal" id="planner" style="background:var(--bg-dark);max-width:100%;padding:100px 60px;">
+  <div style="max-width:1400px;margin:0 auto;">
+    <div class="section-header">
+      <div class="section-tag">Powered by AI</div>
+      <div class="section-title">Incredible AI <span>TRAVEL PLANNER</span></div>
+      <div class="section-rule"></div>
+    </div>
+    <div class="planner-wrap">
+      <div class="planner-panel">
+        <h2>AI Tourism Planner</h2>
+        <p>Describe your dream trip and our AI will craft a personalized itinerary tailored to your budget, style, and timeline.</p>
+        <textarea id="tripPrompt" class="planner-textarea" placeholder="Example: 3-day Kerala honeymoon trip under ₹20,000"></textarea>
+        <button class="planner-submit" id="generateTripBtn">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          Generate AI Trip Plan
+        </button>
+      </div>
+      <div class="planner-result">
+        <div class="result-placeholder" id="resultPlaceholder">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <span>Your personalized AI travel plan will appear here…</span>
+        </div>
+        <div id="genaiResult" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     AI RECOMMENDATIONS
+═══════════════════════════════════════ -->
+<section class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">Personalized</div>
+    <div class="section-title">SMART <span>AI RECOMMENDATIONS</span></div>
+    <div class="section-rule"></div>
+  </div>
+  <div class="ai-rec-grid">
+    <div class="ai-rec-card">
+      <i class="fa-solid fa-heart"></i>
+      <h2>Honeymoon Trips</h2>
+      <p>Romantic AI-curated destinations for couples.</p>
+    </div>
+    <div class="ai-rec-card">
+      <i class="fa-solid fa-wallet"></i>
+      <h2>Budget Trips</h2>
+      <p>Affordable smart tourism plans under ₹10,000.</p>
+    </div>
+    <div class="ai-rec-card">
+      <i class="fa-solid fa-mountain-sun"></i>
+      <h2>Adventure Tours</h2>
+      <p>AI-powered thrilling adventure experiences.</p>
+    </div>
+    <div class="ai-rec-card">
+      <i class="fa-solid fa-hotel"></i>
+      <h2>Luxury Escapes</h2>
+      <p>Premium AI travel recommendations.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">INCREDIBLE <span>INDIA</span></div>
+  <p>Powered by Generative AI · Built with ❤️ for Bharat</p>
+</footer>
+
+<!-- ═══════════════════════════════════════
+     POPUPS (FIXED)
+═══════════════════════════════════════ -->
+
+<!-- AI Explorer Popup (FIXED - Removed inline style.display='') -->
+<div class="popup-overlay" id="aiPopup">
+  <div class="popup-box">
+    <button class="popup-close" onclick="document.getElementById('aiPopup').classList.remove('open')">✕</button>
+    <h2>AI Tourism Explorer</h2>
+    <p>Tell me the name of the place you want to explore and I'll generate everything about it.</p>
+    <input type="text" id="placeInput" class="popup-input" placeholder="Example: Araku Valley">
+    <button class="popup-btn" id="explorePlaceBtn">Explore with AI</button>
+  </div>
+</div>
+
+<!-- Destination Popup -->
+<div class="dest-popup-overlay" id="destinationPopup">
+  <div class="dest-popup-box">
+    <button class="popup-close" onclick="document.getElementById('destinationPopup').classList.remove('open')">✕</button>
+    <h2 id="popupTitle">Destinations</h2>
+    <select id="popupPlaces" class="dest-popup-select"></select>
+    <div class="dest-popup-btns">
+      <button id="exploreDestinationBtn">Explore</button>
+      <button class="dest-close-btn" onclick="document.getElementById('destinationPopup').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<script src="/js/app.js"></script>
+
+<script>
+/* ═══════════════════════════════
+   CURSOR
+═══════════════════════════════ */
+const outer = document.getElementById('cursorOuter');
+const inner = document.getElementById('cursorInner');
+let mx=0,my=0,ox=0,oy=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  inner.style.left=mx+'px'; inner.style.top=my+'px';
+});
+(function animCursor(){
+  ox+=(mx-ox)*0.12; oy+=(my-oy)*0.12;
+  outer.style.left=ox+'px'; outer.style.top=oy+'px';
+  requestAnimationFrame(animCursor);
+})();
+document.querySelectorAll('a,button,.feat-card,.tilt-card,.place-card,.ai-rec-card,.map-info-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>outer.classList.add('hovering'));
+  el.addEventListener('mouseleave',()=>outer.classList.remove('hovering'));
+});
+
+/* ═══════════════════════════════
+   LOADER
+═══════════════════════════════ */
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    const l=document.getElementById('cinematicLoader');
+    l.style.transition='opacity 0.8s ease';
+    l.style.opacity='0';
+    setTimeout(()=>l.style.display='none',800);
+  },2400);
+});
+
+/* ═══════════════════════════════
+   SCROLL EVENTS
+═══════════════════════════════ */
+window.addEventListener('scroll',()=>{
+  const pct=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('progressBar').style.width=pct+'%';
+  // navbar
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>60);
+  // back to top
+  document.getElementById('backToTop').classList.toggle('visible',window.scrollY>300);
+  // reveal
+  document.querySelectorAll('.reveal').forEach(el=>{
+    if(el.getBoundingClientRect().top < window.innerHeight-80) el.classList.add('visible');
+  });
+});
+
+function scrollToTop(){ window.scrollTo({top:0,behavior:'smooth'}); }
+
+/* ═══════════════════════════════
+   TYPING EFFECT
+═══════════════════════════════ */
+const phrases=['Explore Ancient Wonders…','Discover Hidden Gems…','Plan Your Dream Journey…','Taste 5000 Years of Culture…'];
+let pi=0,ci=0,deleting=false;
+function typeEffect(){
+  const el=document.getElementById('typingText');
+  if(!el) return;
+  const phrase=phrases[pi];
+  if(!deleting){ el.textContent=phrase.slice(0,++ci); if(ci===phrase.length){setTimeout(()=>deleting=true,2200); setTimeout(typeEffect,2400); return; }}
+  else{ el.textContent=phrase.slice(0,--ci); if(ci===0){ deleting=false; pi=(pi+1)%phrases.length; }}
+  setTimeout(typeEffect,deleting?50:85);
+}
+setTimeout(typeEffect,3500);
+
+/* ═══════════════════════════════
+   COUNTER ANIMATION
+═══════════════════════════════ */
+function animateCounters(){
+  document.querySelectorAll('.counter').forEach(el=>{
+    const target=+el.dataset.target, dur=2000;
+    const start=performance.now();
+    (function tick(now){
+      const p=Math.min((now-start)/dur,1);
+      el.textContent=Math.floor(p*target).toLocaleString();
+      if(p<1) requestAnimationFrame(tick);
+    })(performance.now());
+  });
+}
+setTimeout(animateCounters,3000);
+
+/* ═══════════════════════════════
+   AI VOICE POPUP
+═══════════════════════════════ */
+['aiVoiceBtn','aiVoiceBtnHero'].forEach(id=>{
+  const btn=document.getElementById(id);
+  if(btn) btn.addEventListener('click',()=>document.getElementById('aiPopup').classList.add('open'));
+});
+
+/* ═══════════════════════════════
+   TOOLTIP
+═══════════════════════════════ */
+function showTooltip(e,text){
+  const t=document.getElementById('tooltip');
+  t.textContent=text; t.style.opacity='1';
+  t.style.left=(e.offsetX+14)+'px'; t.style.top=(e.offsetY-30)+'px';
+}
+function hideTooltip(){ document.getElementById('tooltip').style.opacity='0'; }
+
+/* ═══════════════════════════════
+   GEN AI PLANNER
+═══════════════════════════════ */
+document.getElementById('generateTripBtn').addEventListener('click',async function(){
+  const prompt=document.getElementById('tripPrompt').value.trim();
+  if(!prompt) return;
+  const res=document.getElementById('genaiResult');
+  const ph=document.getElementById('resultPlaceholder');
+  ph.style.display='none'; res.style.display='block';
+  res.textContent='✨ Crafting your AI trip plan…';
+  try{
+    const r=await fetch('/api/ai-trip',{method:'POST',headers:{'Content-Type':'text/plain'},body:prompt});
+    res.textContent=await r.text();
+  }catch(e){ res.textContent='Failed to generate trip plan. Please try again.'; }
+});
+
+/* ═══════════════════════════════
+   INIT REVEAL
+═══════════════════════════════ */
+setTimeout(()=>{
+  document.querySelectorAll('.reveal').forEach(el=>{
+    if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('visible');
+  });
+},3200);
+</script>
+
+</body>
+</html>

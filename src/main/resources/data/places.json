@@ -1,0 +1,14 @@
+[
+{
+"id": 1,
+"stateId": 1,
+"name": "Araku Valley",
+"tag": "Hill Station",
+"shortDesc": "Beautiful valley.",
+"fullDesc": "Araku Valley is beautiful.",
+"bestSeason": "October to March",
+"visitDuration": "2 Days",
+"entryFee": "Free",
+"imageUrl": "https://source.unsplash.com/featured/?mountains"
+}
+]
