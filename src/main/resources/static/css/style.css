@@ -2612,3 +2612,397 @@ cursor:pointer;
 margin:5px;
 
 }
+/* =========================================================
+   RESPONSIVE + DEVICE OPTIMIZATION
+   IncredibleIndia AI
+   ========================================================= */
+
+/* ---------- RESPONSIVE FOUNDATION ---------- */
+
+html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+}
+
+img {
+    height: auto;
+}
+
+button,
+input,
+textarea,
+select {
+    max-width: 100%;
+    font: inherit;
+}
+
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+* {
+    min-width: 0;
+}
+
+/* ---------- FLUID CONTAINERS ---------- */
+
+.container,
+.section-container,
+.content-container {
+    width: min(100% - 40px, 1280px);
+    margin-inline: auto;
+}
+
+/* ---------- LARGE DESKTOP ---------- */
+
+@media (min-width: 1600px) {
+
+    .container,
+    .section-container,
+    .content-container {
+        width: min(100% - 80px, 1440px);
+    }
+
+    body {
+        font-size: 16px;
+    }
+}
+
+/* ---------- LAPTOP ---------- */
+
+@media (max-width: 1199px) {
+
+    .container,
+    .section-container,
+    .content-container {
+        width: min(100% - 48px, 1100px);
+    }
+
+    h1 {
+        font-size: clamp(2.5rem, 5vw, 4.5rem);
+    }
+
+    h2 {
+        font-size: clamp(2rem, 4vw, 3.2rem);
+    }
+}
+
+/* ---------- TABLET ---------- */
+
+@media (max-width: 991px) {
+
+    .container,
+    .section-container,
+    .content-container {
+        width: min(100% - 40px, 900px);
+    }
+
+    section {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    h1 {
+        font-size: clamp(2.25rem, 7vw, 4rem);
+        line-height: 1.05;
+    }
+
+    h2 {
+        font-size: clamp(1.9rem, 5vw, 3rem);
+        line-height: 1.1;
+    }
+
+    h3 {
+        font-size: clamp(1.25rem, 3vw, 1.8rem);
+    }
+
+    /* Prevent desktop grids from becoming cramped */
+
+    .grid,
+    .cards-grid,
+    .destination-grid,
+    .states-grid,
+    .places-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* Flexible two-column layouts */
+
+    .hero,
+    .hero-content,
+    .explorer-layout,
+    .ai-layout,
+    .weather-layout {
+        flex-wrap: wrap;
+    }
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 767px) {
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    .container,
+    .section-container,
+    .content-container {
+        width: calc(100% - 32px);
+        max-width: none;
+    }
+
+    body {
+        font-size: 15px;
+    }
+
+    section {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    h1 {
+        font-size: clamp(2rem, 11vw, 3.4rem);
+        line-height: 1.02;
+        letter-spacing: -0.025em;
+    }
+
+    h2 {
+        font-size: clamp(1.75rem, 8vw, 2.7rem);
+        line-height: 1.08;
+    }
+
+    h3 {
+        font-size: clamp(1.2rem, 5vw, 1.6rem);
+    }
+
+    p {
+        line-height: 1.65;
+    }
+
+    /* One-column mobile grids */
+
+    .grid,
+    .cards-grid,
+    .destination-grid,
+    .states-grid,
+    .places-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Stack common layouts */
+
+    .hero,
+    .hero-content,
+    .explorer-layout,
+    .ai-layout,
+    .weather-layout,
+    .content-row,
+    .feature-row {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    /* Images and media */
+
+    img,
+    video {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Buttons should be comfortable for touch */
+
+    button,
+    .btn,
+    .button,
+    a.btn {
+        min-height: 44px;
+    }
+
+    /* Prevent long AI responses from breaking the viewport */
+
+    pre,
+    code,
+    .ai-response,
+    .response-content,
+    .result-content {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    /* Tables */
+
+    table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Forms */
+
+    input,
+    textarea,
+    select {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    /* Horizontal scrolling sections */
+
+    .horizontal-scroll {
+        display: flex;
+        overflow-x: auto;
+        gap: 16px;
+        padding-bottom: 12px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .horizontal-scroll > * {
+        flex: 0 0 min(85vw, 360px);
+        scroll-snap-align: start;
+    }
+
+    /* Cards */
+
+    .card,
+    .destination-card,
+    .place-card,
+    .state-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Videos */
+
+    .hero video,
+    .background-video,
+    video {
+        max-width: 100%;
+    }
+}
+
+/* ---------- SMALL PHONES ---------- */
+
+@media (max-width: 480px) {
+
+    .container,
+    .section-container,
+    .content-container {
+        width: calc(100% - 24px);
+    }
+
+    h1 {
+        font-size: clamp(1.9rem, 12vw, 2.8rem);
+    }
+
+    h2 {
+        font-size: clamp(1.65rem, 9vw, 2.3rem);
+    }
+
+    p {
+        font-size: 0.95rem;
+    }
+
+    button,
+    .btn,
+    .button {
+        width: 100%;
+    }
+}
+
+/* ---------- VERY SMALL PHONES ---------- */
+
+@media (max-width: 360px) {
+
+    .container,
+    .section-container,
+    .content-container {
+        width: calc(100% - 20px);
+    }
+
+    h1 {
+        font-size: 1.85rem;
+    }
+
+    h2 {
+        font-size: 1.55rem;
+    }
+
+    body {
+        font-size: 14px;
+    }
+}
+
+/* ---------- TOUCH DEVICES ---------- */
+
+@media (hover: none) and (pointer: coarse) {
+
+    /* Remove hover-only transforms that can feel awkward on touch */
+
+    .card:hover,
+    .destination-card:hover,
+    .place-card:hover,
+    .state-card:hover {
+        transform: none;
+    }
+
+    /* Better touch behavior */
+
+    a,
+    button,
+    input,
+    textarea,
+    select {
+        touch-action: manipulation;
+    }
+}
+
+/* ---------- REDUCED MOTION ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto !important;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ---------- SAFE AREA FOR MODERN PHONES ---------- */
+
+@supports (padding: env(safe-area-inset-bottom)) {
+
+    body {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+}
