@@ -1533,7 +1533,138 @@
       }
     }
 
-  </style>
+  
+
+    /* ═══════════════════════════════════════
+       PHASE 2 — PREMIUM INTERACTION LAYER
+       ═══════════════════════════════════════ */
+    :root {
+      --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* Navbar becomes a floating glass control on scroll */
+    .navbar {
+      will-change: transform, background-color, padding;
+    }
+    .navbar.scrolled {
+      box-shadow: 0 10px 35px rgba(0,0,0,.22);
+    }
+    .nav-links a:focus-visible,
+    .nav-cta:focus-visible,
+    .mobile-menu-toggle:focus-visible,
+    .mobile-menu a:focus-visible,
+    .btn-primary:focus-visible,
+    .btn-ghost:focus-visible {
+      outline: 2px solid var(--accent-warm);
+      outline-offset: 4px;
+    }
+
+    body.menu-open { overflow:hidden; }
+
+    /* Mobile menu staggered entrance */
+    @media (max-width: 900px) {
+      .mobile-menu a {
+        opacity: 0;
+        transform: translateY(-8px);
+        transition: opacity .3s var(--ease-premium), transform .3s var(--ease-premium), background .2s, color .2s;
+      }
+      .mobile-menu.open a { opacity: 1; transform: translateY(0); }
+      .mobile-menu.open a:nth-child(1) { transition-delay: .03s; }
+      .mobile-menu.open a:nth-child(2) { transition-delay: .07s; }
+      .mobile-menu.open a:nth-child(3) { transition-delay: .11s; }
+      .mobile-menu.open a:nth-child(4) { transition-delay: .15s; }
+      .mobile-menu.open a:nth-child(5) { transition-delay: .19s; }
+
+      .mobile-menu-toggle {
+        position: relative;
+        overflow: hidden;
+        transition: transform .25s var(--ease-premium), background .25s, border-color .25s;
+      }
+      .mobile-menu-toggle:active { transform: scale(.92); }
+      .mobile-menu-toggle i { transition: transform .25s var(--ease-premium); }
+      .mobile-menu.open + * { pointer-events: none; }
+
+      .nav-cta,
+      .hero-btns .btn-primary,
+      .hero-btns .btn-ghost {
+        transition: transform .25s var(--ease-premium), box-shadow .25s, background .25s, color .25s;
+      }
+      .nav-cta:active,
+      .hero-btns .btn-primary:active,
+      .hero-btns .btn-ghost:active { transform: scale(.98); }
+    }
+
+    /* Premium card interaction only where hover exists */
+    @media (hover: hover) and (pointer: fine) {
+      .feat-card,
+      .tilt-card,
+      .place-card,
+      .ai-rec-card,
+      .map-info-card,
+      .exp-card {
+        will-change: transform;
+      }
+      .feat-card:hover,
+      .place-card:hover,
+      .ai-rec-card:hover,
+      .exp-card:hover {
+        transform: translateY(-5px);
+      }
+      .nav-cta:hover,
+      .btn-primary:hover,
+      .btn-ghost:hover {
+        transform: translateY(-2px);
+      }
+    }
+
+    /* Hero background parallax helper */
+    .hero-video {
+      will-change: transform;
+      transform: scale(1.03);
+    }
+    .hero-content {
+      will-change: transform;
+    }
+
+    /* Reveal transitions */
+    .reveal {
+      transition: opacity .8s var(--ease-premium), transform .8s var(--ease-premium);
+    }
+    .reveal.visible { transform: translateY(0); opacity: 1; }
+
+    /* Mobile: keep the visual hierarchy compact and stable */
+    @media (max-width: 600px) {
+      .navbar.scrolled {
+        background: rgba(8,14,26,.94);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+      }
+      .hero-video { transform: scale(1.01); }
+      .hero-content { transform: none !important; }
+      .reveal { transition-duration: .6s; }
+      .mobile-menu { max-height: calc(100svh - 92px); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    }
+
+    /* Safe-area support for iPhone */
+    @supports (padding: env(safe-area-inset-top)) {
+      .navbar { padding-top: max(18px, env(safe-area-inset-top)); }
+      @media (max-width: 900px) {
+        .navbar { top: max(8px, env(safe-area-inset-top)); }
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-video,
+      .hero-content,
+      .mobile-menu a,
+      .reveal,
+      .nav-cta,
+      .btn-primary,
+      .btn-ghost { will-change: auto; transition: none !important; }
+      .hero-video { transform: none; }
+    }
+</style>
 </head>
 
 <body>
@@ -2165,20 +2296,23 @@
 ═══════════════════════════════ */
 const outer = document.getElementById('cursorOuter');
 const inner = document.getElementById('cursorInner');
+const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 let mx=0,my=0,ox=0,oy=0;
-document.addEventListener('mousemove',e=>{
-  mx=e.clientX; my=e.clientY;
-  inner.style.left=mx+'px'; inner.style.top=my+'px';
-});
-(function animCursor(){
-  ox+=(mx-ox)*0.12; oy+=(my-oy)*0.12;
-  outer.style.left=ox+'px'; outer.style.top=oy+'px';
-  requestAnimationFrame(animCursor);
-})();
-document.querySelectorAll('a,button,.feat-card,.tilt-card,.place-card,.ai-rec-card,.map-info-card').forEach(el=>{
-  el.addEventListener('mouseenter',()=>outer.classList.add('hovering'));
-  el.addEventListener('mouseleave',()=>outer.classList.remove('hovering'));
-});
+if(finePointer && outer && inner){
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX; my=e.clientY;
+    inner.style.left=mx+'px'; inner.style.top=my+'px';
+  },{passive:true});
+  (function animCursor(){
+    ox+=(mx-ox)*0.14; oy+=(my-oy)*0.14;
+    outer.style.left=ox+'px'; outer.style.top=oy+'px';
+    requestAnimationFrame(animCursor);
+  })();
+  document.querySelectorAll('a,button,.feat-card,.tilt-card,.place-card,.ai-rec-card,.map-info-card').forEach(el=>{
+    el.addEventListener('mouseenter',()=>outer.classList.add('hovering'));
+    el.addEventListener('mouseleave',()=>outer.classList.remove('hovering'));
+  });
+}
 
 /* ═══════════════════════════════
    LOADER
@@ -2215,18 +2349,23 @@ function closeMobileMenu(){
   mobileMenuToggle.setAttribute('aria-expanded','false');
   mobileMenuToggle.setAttribute('aria-label','Open navigation menu');
   mobileMenuToggle.innerHTML='<i class="fa-solid fa-bars"></i>';
+  document.body.classList.remove('menu-open');
+}
+
+function openMobileMenu(){
+  if(!mobileMenu || !mobileMenuToggle) return;
+  mobileMenu.classList.add('open');
+  mobileMenu.setAttribute('aria-hidden','false');
+  mobileMenuToggle.setAttribute('aria-expanded','true');
+  mobileMenuToggle.setAttribute('aria-label','Close navigation menu');
+  mobileMenuToggle.innerHTML='<i class="fa-solid fa-xmark"></i>';
+  document.body.classList.add('menu-open');
 }
 
 if(mobileMenu && mobileMenuToggle){
   mobileMenuToggle.addEventListener('click',()=>{
-    const open=!mobileMenu.classList.contains('open');
-    mobileMenu.classList.toggle('open',open);
-    mobileMenu.setAttribute('aria-hidden',String(!open));
-    mobileMenuToggle.setAttribute('aria-expanded',String(open));
-    mobileMenuToggle.setAttribute('aria-label',open ? 'Close navigation menu' : 'Open navigation menu');
-    mobileMenuToggle.innerHTML=open
-      ? '<i class="fa-solid fa-xmark"></i>'
-      : '<i class="fa-solid fa-bars"></i>';
+    if(mobileMenu.classList.contains('open')) closeMobileMenu();
+    else openMobileMenu();
   });
 
   mobileMenu.querySelectorAll('a').forEach(link=>{
@@ -2239,27 +2378,50 @@ if(mobileMenu && mobileMenuToggle){
     }
   });
 
+  document.addEventListener('keydown',(event)=>{
+    if(event.key==='Escape') closeMobileMenu();
+  });
+
   window.addEventListener('resize',()=>{
     if(window.innerWidth>900) closeMobileMenu();
-  });
+  },{passive:true});
 }
 
 /* ═══════════════════════════════
    SCROLL EVENTS
 ═══════════════════════════════ */
+const progressBar=document.getElementById('progressBar');
+const navbar=document.getElementById('navbar');
+const backToTop=document.getElementById('backToTop');
+const heroVideo=document.querySelector('.hero-video');
+const heroContent=document.querySelector('.hero-content');
+let scrollTicking=false;
+
+function updateScrollUI(){
+  const scrollable=document.documentElement.scrollHeight-window.innerHeight;
+  const y=window.scrollY || window.pageYOffset;
+  const pct=scrollable>0 ? Math.min(100,(y/scrollable)*100) : 0;
+  if(progressBar) progressBar.style.width=pct+'%';
+  if(navbar) navbar.classList.toggle('scrolled',y>50);
+  if(backToTop) backToTop.classList.toggle('visible',y>420);
+
+  // Subtle desktop-only hero parallax. Disabled on touch devices.
+  if(finePointer && heroVideo && heroContent && y < window.innerHeight*1.15){
+    const shift=Math.min(28,y*0.08);
+    heroVideo.style.transform=`scale(1.03) translate3d(0,${shift}px,0)`;
+    heroContent.style.transform=`translate3d(0,${Math.min(18,y*0.035)}px,0)`;
+  }
+  scrollTicking=false;
+}
+
 window.addEventListener('scroll',()=>{
-  const scrollable=document.body.scrollHeight-window.innerHeight;
-  const pct=scrollable>0 ? (window.scrollY/scrollable)*100 : 0;
-  document.getElementById('progressBar').style.width=pct+'%';
-  // navbar
-  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>60);
-  // back to top
-  document.getElementById('backToTop').classList.toggle('visible',window.scrollY>300);
-  // reveal
-  document.querySelectorAll('.reveal').forEach(el=>{
-    if(el.getBoundingClientRect().top < window.innerHeight-80) el.classList.add('visible');
-  });
-});
+  if(!scrollTicking){
+    scrollTicking=true;
+    requestAnimationFrame(updateScrollUI);
+  }
+},{passive:true});
+
+updateScrollUI();
 
 function scrollToTop(){ window.scrollTo({top:0,behavior:'smooth'}); }
 
@@ -2331,11 +2493,20 @@ document.getElementById('generateTripBtn').addEventListener('click',async functi
 /* ═══════════════════════════════
    INIT REVEAL
 ═══════════════════════════════ */
-setTimeout(()=>{
-  document.querySelectorAll('.reveal').forEach(el=>{
-    if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('visible');
-  });
-},1400);
+const revealItems=document.querySelectorAll('.reveal');
+if('IntersectionObserver' in window){
+  const revealObserver=new IntersectionObserver((entries,observer)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  },{rootMargin:'0px 0px -10% 0px',threshold:0.08});
+  revealItems.forEach(el=>revealObserver.observe(el));
+}else{
+  revealItems.forEach(el=>el.classList.add('visible'));
+}
 </script>
 
 </body>
